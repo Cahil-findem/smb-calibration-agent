@@ -40,8 +40,8 @@ const Onboarding: React.FC = () => {
         setIsTransitioning(false);
       }, 600); // Wait for fade-out animation
     } else {
-      // Go to Recipe1 page
-      navigate('/recipe1');
+      // Go to GoalSelection page
+      navigate('/goal-selection');
     }
   };
 

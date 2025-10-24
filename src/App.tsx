@@ -3,7 +3,7 @@ import './App.css'
 import Header from './components/Header'
 import DemoSetup from './pages/DemoSetup'
 import Onboarding from './pages/Onboarding'
-import Recipe1 from './pages/Recipe1'
+import GoalSelection from './pages/GoalSelection'
 
 function App() {
   const navigate = useNavigate()
@@ -24,7 +24,7 @@ function App() {
           <Route path="/" element={<DemoSetup />} />
           <Route path="/demo-setup" element={<Navigate to="/" replace />} />
           <Route path="/onboarding" element={<Onboarding />} />
-          <Route path="/recipe1" element={<Recipe1 />} />
+          <Route path="/goal-selection" element={<GoalSelection />} />
           {/* Other routes will be added here */}
           {/* <Route path="/recipe-loader" element={<RecipeLoader />} /> */}
           {/* <Route path="/recipe2" element={<Recipe2 />} /> */}
