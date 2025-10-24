@@ -77,71 +77,43 @@
   text-align: left;
 }
 
-/* Goals Grid */
-.goals-grid {
+/* Job Description Section */
+.job-description-section {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 16px;
 }
 
-/* Goal Cards */
-.goal-card {
+/* Job Description Input */
+.job-description-input {
   width: 100%;
   max-width: 634px;
   padding: 16px;
   background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.5s ease;
-  color: #6b7280;
-  font-size: 16px;
+  border: 1px solid #DCDFEA;
+  border-radius: 8px;
+  font-size: 14px;
   font-family: 'Roboto', sans-serif;
   font-weight: 400;
-  line-height: 25.6px;
-  text-align: left;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 8px;
+  line-height: 1.4;
+  color: #101828;
+  resize: vertical;
+  min-height: 200px;
+  transition: border-color 0.2s ease;
 }
 
-.goal-card:hover:not(.unselected) {
-  border-color: #d1d5db;
-  background: #f9fafb;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+.job-description-input::placeholder {
+  color: #9CA3AF;
 }
 
-.goal-card.unselected:hover {
-  opacity: 0.7 !important;
+.job-description-input:focus {
+  outline: none;
+  border-color: #4599FA;
+  box-shadow: 0px 0px 0px 2px rgba(69, 153, 250, 0.15);
 }
 
-.goal-card.selected {
-  background: linear-gradient(0deg, rgba(225, 239, 255, 0.40) 0%, rgba(225, 239, 255, 0.40) 100%), white;
-  color: #0F42BC;
-  border-color: transparent;
-  outline: 1px solid #167FF9;
-  outline-offset: -1px;
-  box-shadow: 0px 0px 0px 2px rgba(69, 153, 250, 0.25);
-  transform: none;
-}
-
-.goal-card-text {
-  flex: 1 1 0;
-}
-
-.goal-card-icon {
-  color: #167FF9;
-  font-size: 20px;
-  font-family: 'Material Icons Round';
-  font-weight: 400;
-  line-height: 19.6px;
-}
-
-.goal-card.unselected {
-  opacity: 0.5 !important;
+.job-description-input:hover {
+  border-color: #B0B7C3;
 }
 
 /* Button Styles */
@@ -323,7 +295,7 @@
   }
 
   .title-section,
-  .goals-grid {
+  .job-description-section {
     margin-left: 40px;
   }
 
@@ -331,8 +303,8 @@
     font-size: 20px;
   }
 
-  .goal-card {
-    padding: 16px 20px;
+  .job-description-input {
+    padding: 12px;
     font-size: 14px;
   }
 }

@@ -4,27 +4,20 @@ import './GoalSelection.css';
 
 const GoalSelection: React.FC = () => {
   const navigate = useNavigate();
-  const [selectedGoal, setSelectedGoal] = useState<string | null>(null);
+  const [jobDescription, setJobDescription] = useState<string>('');
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [transitionDirection, setTransitionDirection] = useState<'forward' | 'backward'>('forward');
 
-  const goals = [
-    { id: 'applicants', text: 'Get more applicants' },
-    { id: 'warm', text: 'Keep candidates warm' },
-    { id: 'both', text: 'Both' },
-  ];
+  const handleJobDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const value = e.target.value;
+    setJobDescription(value);
 
-  const handleGoalSelect = (goalId: string) => {
-    // Allow deselection by clicking the same card
-    const newSelectedGoal = selectedGoal === goalId ? null : goalId;
-    setSelectedGoal(newSelectedGoal);
-
-    // Store selection in localStorage
+    // Store job description in localStorage
     const storedData = localStorage.getItem('demoSetupData');
     if (storedData) {
       try {
         const demoData = JSON.parse(storedData);
-        demoData.selectedGoal = newSelectedGoal;
+        demoData.jobDescription = value;
         localStorage.setItem('demoSetupData', JSON.stringify(demoData));
       } catch (error) {
         console.error('Error updating demo setup data:', error);
@@ -33,7 +26,7 @@ const GoalSelection: React.FC = () => {
   };
 
   const handleContinue = () => {
-    if (selectedGoal) {
+    if (jobDescription.trim()) {
       setTransitionDirection('forward');
       setIsTransitioning(true);
       setTimeout(() => {
@@ -68,34 +61,19 @@ const GoalSelection: React.FC = () => {
                 alt="Logo"
               />
               <h1 className="page-title">
-                What's your main goal?
+                To get started, what role are we hiring for?
               </h1>
             </div>
           </div>
 
-          <div className={`goals-grid ${isTransitioning ? (transitionDirection === 'forward' ? 'animate-fade-out-up' : 'animate-fade-out-down') : 'animate-fade-up animate-delay-1'}`}>
-            {goals.map((goal, index) => {
-              const isSelected = selectedGoal === goal.id;
-              const isUnselected = selectedGoal && !isSelected;
-
-              return (
-                <div
-                  key={goal.id}
-                  className={`goal-card ${isSelected ? 'selected' : ''} ${isUnselected ? 'unselected' : ''} ${isTransitioning ? (transitionDirection === 'forward' ? 'animate-fade-out-up' : 'animate-fade-out-down') : 'animate-fade-up'}`}
-                  style={{ animationDelay: `${0.2 + index * 0.1}s` }}
-                  onClick={() => handleGoalSelect(goal.id)}
-                >
-                <div className="goal-card-text">
-                  {goal.text}
-                </div>
-                {isSelected && (
-                  <div className="goal-card-icon">
-                    check_circle
-                  </div>
-                )}
-                </div>
-              );
-            })}
+          <div className={`job-description-section ${isTransitioning ? (transitionDirection === 'forward' ? 'animate-fade-out-up' : 'animate-fade-out-down') : 'animate-fade-up animate-delay-1'}`}>
+            <textarea
+              className="job-description-input"
+              placeholder="Paste your job description here..."
+              value={jobDescription}
+              onChange={handleJobDescriptionChange}
+              rows={12}
+            />
           </div>
 
           <div className={`buttons-container ${isTransitioning ? (transitionDirection === 'forward' ? 'animate-fade-out-up' : 'animate-fade-out-down') : 'animate-fade-up animate-delay-2'}`}>
@@ -110,7 +88,7 @@ const GoalSelection: React.FC = () => {
 
             <div className="button-wrapper">
               <div
-                className={`btn btn-blue ${!selectedGoal ? 'disabled' : ''}`}
+                className={`btn btn-blue ${!jobDescription.trim() ? 'disabled' : ''}`}
                 onClick={handleContinue}
               >
                 Continue
