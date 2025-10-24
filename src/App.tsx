@@ -4,6 +4,7 @@ import Header from './components/Header'
 import DemoSetup from './pages/DemoSetup'
 import Onboarding from './pages/Onboarding'
 import GoalSelection from './pages/GoalSelection'
+import ScreeningQuestions from './pages/ScreeningQuestions'
 
 function App() {
   const navigate = useNavigate()
@@ -25,6 +26,7 @@ function App() {
           <Route path="/demo-setup" element={<Navigate to="/" replace />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/goal-selection" element={<GoalSelection />} />
+          <Route path="/screening-questions" element={<ScreeningQuestions />} />
           {/* Other routes will be added here */}
           {/* <Route path="/recipe-loader" element={<RecipeLoader />} /> */}
           {/* <Route path="/recipe2" element={<Recipe2 />} /> */}

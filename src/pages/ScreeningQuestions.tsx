@@ -1,23 +1,28 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './GoalSelection.css';
+import './ScreeningQuestions.css';
 
-const GoalSelection: React.FC = () => {
+const ScreeningQuestions: React.FC = () => {
   const navigate = useNavigate();
-  const [jobDescription, setJobDescription] = useState<string>('');
+  const [questions, setQuestions] = useState<string[]>([
+    'Do you have experience with React and TypeScript?',
+    'Are you comfortable working remotely?',
+    'What is your expected salary range?'
+  ]);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [transitionDirection, setTransitionDirection] = useState<'forward' | 'backward'>('forward');
 
-  const handleJobDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const value = e.target.value;
-    setJobDescription(value);
+  const handleQuestionChange = (index: number, value: string) => {
+    const updatedQuestions = [...questions];
+    updatedQuestions[index] = value;
+    setQuestions(updatedQuestions);
 
-    // Store job description in localStorage
+    // Store questions in localStorage
     const storedData = localStorage.getItem('demoSetupData');
     if (storedData) {
       try {
         const demoData = JSON.parse(storedData);
-        demoData.jobDescription = value;
+        demoData.screeningQuestions = updatedQuestions;
         localStorage.setItem('demoSetupData', JSON.stringify(demoData));
       } catch (error) {
         console.error('Error updating demo setup data:', error);
@@ -26,11 +31,13 @@ const GoalSelection: React.FC = () => {
   };
 
   const handleContinue = () => {
-    if (jobDescription.trim()) {
+    // Check if all questions are filled
+    const allFilled = questions.every(q => q.trim() !== '');
+    if (allFilled) {
       setTransitionDirection('forward');
       setIsTransitioning(true);
       setTimeout(() => {
-        navigate('/screening-questions');
+        navigate('/next-page'); // Update this to the next page in your flow
       }, 600);
     }
   };
@@ -39,19 +46,21 @@ const GoalSelection: React.FC = () => {
     setTransitionDirection('backward');
     setIsTransitioning(true);
     setTimeout(() => {
-      navigate('/onboarding');
+      navigate('/goal-selection');
     }, 600);
   };
 
+  const allQuestionsFilled = questions.every(q => q.trim() !== '');
+
   return (
-    <div className="goal-selection-container">
+    <div className="screening-questions-container">
       {/* Progress Bar */}
       <div className="progress-bar">
-        <div className="progress-fill" style={{ width: '60%' }}></div>
+        <div className="progress-fill" style={{ width: '80%' }}></div>
       </div>
 
       {/* Main Content */}
-      <div className="goal-selection-content">
+      <div className="screening-questions-content">
         <div className="content-inner">
           <div className={`title-section ${isTransitioning ? (transitionDirection === 'forward' ? 'animate-fade-out-up' : 'animate-fade-out-down') : 'animate-fade-up'}`}>
             <div className="title-with-logo">
@@ -61,19 +70,24 @@ const GoalSelection: React.FC = () => {
                 alt="Logo"
               />
               <h1 className="page-title">
-                To get started, what role are we hiring for?
+                Great! Could you share three screening questions you'd like me to ask candidates before sending them your way?
               </h1>
             </div>
           </div>
 
-          <div className={`job-description-section ${isTransitioning ? (transitionDirection === 'forward' ? 'animate-fade-out-up' : 'animate-fade-out-down') : 'animate-fade-up animate-delay-1'}`}>
-            <textarea
-              className="job-description-input"
-              placeholder="Paste your job description here..."
-              value={jobDescription}
-              onChange={handleJobDescriptionChange}
-              rows={12}
-            />
+          <div className={`questions-list ${isTransitioning ? (transitionDirection === 'forward' ? 'animate-fade-out-up' : 'animate-fade-out-down') : 'animate-fade-up animate-delay-1'}`}>
+            {questions.map((question, index) => (
+              <div key={index} className="question-item">
+                <div className="question-number">{index + 1}</div>
+                <input
+                  type="text"
+                  className="question-input"
+                  value={question}
+                  onChange={(e) => handleQuestionChange(index, e.target.value)}
+                  placeholder={`Question ${index + 1}`}
+                />
+              </div>
+            ))}
           </div>
 
           <div className={`buttons-container ${isTransitioning ? (transitionDirection === 'forward' ? 'animate-fade-out-up' : 'animate-fade-out-down') : 'animate-fade-up animate-delay-2'}`}>
@@ -88,7 +102,7 @@ const GoalSelection: React.FC = () => {
 
             <div className="button-wrapper">
               <div
-                className={`btn btn-blue ${!jobDescription.trim() ? 'disabled' : ''}`}
+                className={`btn btn-blue ${!allQuestionsFilled ? 'disabled' : ''}`}
                 onClick={handleContinue}
               >
                 Continue
@@ -101,4 +115,4 @@ const GoalSelection: React.FC = () => {
   );
 };
 
-export default GoalSelection;
+export default ScreeningQuestions;
