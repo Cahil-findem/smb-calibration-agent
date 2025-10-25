@@ -128,6 +128,12 @@ const CandidateReview: React.FC = () => {
               const match = item.match || {};
               const facetPills = match.facet_pills || [];
 
+              // Helper to check match criteria from facet pills
+              const rolePill = facetPills.find((p: any) => p.label === 'Role');
+              const locationPill = facetPills.find((p: any) => p.label === 'Location');
+              const experiencePill = facetPills.find((p: any) => p.label === 'Experience');
+              const skillsPill = facetPills.find((p: any) => p.label === 'Skills');
+
               return {
                 id: candidate.id || index + 1,
                 name: candidate.full_name || candidate.name || 'Unknown Candidate',
@@ -140,10 +146,10 @@ const CandidateReview: React.FC = () => {
                 avatar: index === 0 ? '👨‍💼' : index === 1 ? '👩‍💼' : '👨‍💻',
                 isTopMatch: match.top_match === true || index === 0,
                 matchCriteria: {
-                  role: facetPills.find((p: any) => p.label === 'Role')?.state === 'match' ?? true,
-                  location: facetPills.find((p: any) => p.label === 'Location')?.state === 'match' ?? true,
-                  experience: facetPills.find((p: any) => p.label === 'Experience')?.state === 'match' ?? true,
-                  skills: facetPills.find((p: any) => p.label === 'Skills')?.state === 'match' ?? true
+                  role: rolePill ? rolePill.state === 'match' : true,
+                  location: locationPill ? locationPill.state === 'match' : true,
+                  experience: experiencePill ? experiencePill.state === 'match' : true,
+                  skills: skillsPill ? skillsPill.state === 'match' : true
                 },
                 whyMatch: match.why_summary || match.why_rich?.text || 'Strong candidate based on qualifications and experience.'
               };
