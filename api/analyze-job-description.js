@@ -37,9 +37,39 @@ export default async function handler(req, res) {
       },
     });
 
+    console.log('OpenAI Full Response:', JSON.stringify(response, null, 2));
+
+    // Extract the actual content from the response
+    // The Responses API structure: response.output[1].content[0].text
+    let content = null;
+
+    if (response.output && Array.isArray(response.output)) {
+      // Find the message output (usually the second item)
+      const messageOutput = response.output.find(item => item.type === 'message');
+      if (messageOutput && messageOutput.content && messageOutput.content[0]) {
+        content = messageOutput.content[0].text;
+      }
+    }
+
+    console.log('Extracted Content (raw):', content);
+
+    // Parse the JSON string
+    let parsedContent = null;
+    if (typeof content === 'string') {
+      try {
+        parsedContent = JSON.parse(content);
+        console.log('Successfully parsed candidate data');
+      } catch (error) {
+        console.error('Failed to parse JSON:', error);
+        parsedContent = content; // Fall back to raw string
+      }
+    } else {
+      parsedContent = content;
+    }
+
     res.status(200).json({
       success: true,
-      response: response,
+      response: parsedContent,
     });
   } catch (error) {
     console.error('OpenAI Prompt API Error:', error);

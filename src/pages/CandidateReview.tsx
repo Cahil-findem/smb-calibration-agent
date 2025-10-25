@@ -82,29 +82,31 @@ const CandidateReview: React.FC = () => {
   useEffect(() => {
     // Load AI-generated candidates from localStorage
     const storedData = localStorage.getItem('demoSetupData');
+    console.log('Raw localStorage data:', storedData);
+
     if (storedData) {
       try {
         const demoData = JSON.parse(storedData);
+        console.log('Parsed demoData:', demoData);
+
         if (demoData.aiAnalysis) {
           const aiResponse = demoData.aiAnalysis;
           console.log('AI Analysis Response:', aiResponse);
+          console.log('AI Response Type:', typeof aiResponse);
+          console.log('AI Response Keys:', Object.keys(aiResponse));
 
-          // Try to parse candidates from the AI response
+          // The response should now be an array of candidate objects
           let parsedCandidates: any[] = [];
 
-          // If the response has a candidates array
-          if (aiResponse.candidates && Array.isArray(aiResponse.candidates)) {
-            parsedCandidates = aiResponse.candidates;
-          }
-          // If the response itself is an array
-          else if (Array.isArray(aiResponse)) {
+          // If the response is an array (expected structure from OpenAI)
+          if (Array.isArray(aiResponse)) {
             parsedCandidates = aiResponse;
           }
-          // If the response has candidate profiles in text/data field
-          else if (aiResponse.data && Array.isArray(aiResponse.data)) {
-            parsedCandidates = aiResponse.data;
+          // Fallback: If the response has a candidates array
+          else if (aiResponse.candidates && Array.isArray(aiResponse.candidates)) {
+            parsedCandidates = aiResponse.candidates;
           }
-          // If it's a text response, try to parse JSON from it
+          // Fallback: If it's a text response, try to parse JSON from it
           else if (typeof aiResponse === 'string') {
             try {
               const jsonMatch = aiResponse.match(/\[[\s\S]*\]/);
@@ -116,25 +118,36 @@ const CandidateReview: React.FC = () => {
             }
           }
 
+          console.log('Parsed candidates array:', parsedCandidates);
+
           // Map parsed candidates to our format
           if (parsedCandidates.length > 0) {
-            const mappedCandidates = parsedCandidates.slice(0, 3).map((c: any, index: number) => ({
-              id: index + 1,
-              name: c.name || c.candidate_name || 'Unknown Candidate',
-              title: c.title || c.job_title || c.current_role || 'Professional',
-              company: c.company || c.current_company || 'Tech Company',
-              companyLogo: '🏢',
-              tenure: c.tenure || c.years_at_company ? `${c.years_at_company} year tenure` : '3+ years',
-              avatar: index === 0 ? '👨‍💼' : index === 1 ? '👩‍💼' : '👨‍💻',
-              isTopMatch: index === 0,
-              matchCriteria: {
-                role: c.match_criteria?.role !== false,
-                location: c.match_criteria?.location !== false,
-                experience: c.match_criteria?.experience !== false,
-                skills: c.match_criteria?.skills !== false
-              },
-              whyMatch: c.why_match || c.match_reason || c.summary || 'Strong candidate based on qualifications and experience.'
-            }));
+            const mappedCandidates = parsedCandidates.slice(0, 3).map((item: any, index: number) => {
+              // Extract candidate data from the new structure
+              const candidate = item.candidate || item;
+              const match = item.match || {};
+              const facetPills = match.facet_pills || [];
+
+              return {
+                id: candidate.id || index + 1,
+                name: candidate.full_name || candidate.name || 'Unknown Candidate',
+                title: candidate.current_position?.title || candidate.title || 'Professional',
+                company: candidate.current_position?.company || candidate.company || 'Tech Company',
+                companyLogo: '🏢',
+                tenure: candidate.current_position?.tenure_years
+                  ? `${candidate.current_position.tenure_years} year tenure`
+                  : '3+ years',
+                avatar: index === 0 ? '👨‍💼' : index === 1 ? '👩‍💼' : '👨‍💻',
+                isTopMatch: match.top_match === true || index === 0,
+                matchCriteria: {
+                  role: facetPills.find((p: any) => p.label === 'Role')?.state === 'match' ?? true,
+                  location: facetPills.find((p: any) => p.label === 'Location')?.state === 'match' ?? true,
+                  experience: facetPills.find((p: any) => p.label === 'Experience')?.state === 'match' ?? true,
+                  skills: facetPills.find((p: any) => p.label === 'Skills')?.state === 'match' ?? true
+                },
+                whyMatch: match.why_summary || match.why_rich?.text || 'Strong candidate based on qualifications and experience.'
+              };
+            });
 
             setCandidates(mappedCandidates);
             console.log('Loaded AI-generated candidates:', mappedCandidates);
