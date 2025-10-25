@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './CandidateReview.css';
 
@@ -20,61 +20,132 @@ interface Candidate {
   whyMatch: string;
 }
 
+// Default fallback candidates
+const defaultCandidates: Candidate[] = [
+  {
+    id: 1,
+    name: 'Sarah Chen',
+    title: 'Senior Product Manager',
+    company: 'Google',
+    companyLogo: '🔷',
+    tenure: '5 year tenure',
+    avatar: '👩‍💼',
+    isTopMatch: true,
+    matchCriteria: {
+      role: true,
+      location: true,
+      experience: true,
+      skills: true
+    },
+    whyMatch: 'Sarah\'s extensive experience in product management at a leading tech company, combined with her proven track record of launching successful products, makes her an exceptional candidate. Her strategic thinking and user-centric approach align perfectly with the role requirements.'
+  },
+  {
+    id: 2,
+    name: 'Michael Rodriguez',
+    title: 'Engineering Manager',
+    company: 'Microsoft',
+    companyLogo: '🟦',
+    tenure: '7 year tenure',
+    avatar: '👨‍💻',
+    isTopMatch: false,
+    matchCriteria: {
+      role: true,
+      location: true,
+      experience: true,
+      skills: false
+    },
+    whyMatch: 'Michael brings strong leadership experience managing distributed engineering teams. His background in scaling products and mentoring engineers demonstrates the technical depth and people management skills crucial for this position.'
+  },
+  {
+    id: 3,
+    name: 'Emily Watson',
+    title: 'Director of Engineering',
+    company: 'Amazon',
+    companyLogo: '🟧',
+    tenure: '4 year tenure',
+    avatar: '👩‍🔬',
+    isTopMatch: false,
+    matchCriteria: {
+      role: true,
+      location: false,
+      experience: true,
+      skills: true
+    },
+    whyMatch: 'Emily\'s experience leading large-scale engineering initiatives and building high-performing teams makes her a strong fit. Her focus on innovation and delivering customer value aligns well with the company\'s goals and culture.'
+  }
+];
+
 const CandidateReview: React.FC = () => {
   const navigate = useNavigate();
-  const [candidates] = useState<Candidate[]>([
-    {
-      id: 1,
-      name: 'Sarah Chen',
-      title: 'Senior Product Manager',
-      company: 'Google',
-      companyLogo: '🔷',
-      tenure: '5 year tenure',
-      avatar: '👩‍💼',
-      isTopMatch: true,
-      matchCriteria: {
-        role: true,
-        location: true,
-        experience: true,
-        skills: true
-      },
-      whyMatch: 'Sarah\'s extensive experience in product management at a leading tech company, combined with her proven track record of launching successful products, makes her an exceptional candidate. Her strategic thinking and user-centric approach align perfectly with the role requirements.'
-    },
-    {
-      id: 2,
-      name: 'Michael Rodriguez',
-      title: 'Engineering Manager',
-      company: 'Microsoft',
-      companyLogo: '🟦',
-      tenure: '7 year tenure',
-      avatar: '👨‍💻',
-      isTopMatch: false,
-      matchCriteria: {
-        role: true,
-        location: true,
-        experience: true,
-        skills: false
-      },
-      whyMatch: 'Michael brings strong leadership experience managing distributed engineering teams. His background in scaling products and mentoring engineers demonstrates the technical depth and people management skills crucial for this position.'
-    },
-    {
-      id: 3,
-      name: 'Emily Watson',
-      title: 'Director of Engineering',
-      company: 'Amazon',
-      companyLogo: '🟧',
-      tenure: '4 year tenure',
-      avatar: '👩‍🔬',
-      isTopMatch: false,
-      matchCriteria: {
-        role: true,
-        location: false,
-        experience: true,
-        skills: true
-      },
-      whyMatch: 'Emily\'s experience leading large-scale engineering initiatives and building high-performing teams makes her a strong fit. Her focus on innovation and delivering customer value aligns well with the company\'s goals and culture.'
+  const [candidates, setCandidates] = useState<Candidate[]>(defaultCandidates);
+
+  useEffect(() => {
+    // Load AI-generated candidates from localStorage
+    const storedData = localStorage.getItem('demoSetupData');
+    if (storedData) {
+      try {
+        const demoData = JSON.parse(storedData);
+        if (demoData.aiAnalysis) {
+          const aiResponse = demoData.aiAnalysis;
+          console.log('AI Analysis Response:', aiResponse);
+
+          // Try to parse candidates from the AI response
+          let parsedCandidates: any[] = [];
+
+          // If the response has a candidates array
+          if (aiResponse.candidates && Array.isArray(aiResponse.candidates)) {
+            parsedCandidates = aiResponse.candidates;
+          }
+          // If the response itself is an array
+          else if (Array.isArray(aiResponse)) {
+            parsedCandidates = aiResponse;
+          }
+          // If the response has candidate profiles in text/data field
+          else if (aiResponse.data && Array.isArray(aiResponse.data)) {
+            parsedCandidates = aiResponse.data;
+          }
+          // If it's a text response, try to parse JSON from it
+          else if (typeof aiResponse === 'string') {
+            try {
+              const jsonMatch = aiResponse.match(/\[[\s\S]*\]/);
+              if (jsonMatch) {
+                parsedCandidates = JSON.parse(jsonMatch[0]);
+              }
+            } catch (e) {
+              console.error('Could not parse candidates from text response');
+            }
+          }
+
+          // Map parsed candidates to our format
+          if (parsedCandidates.length > 0) {
+            const mappedCandidates = parsedCandidates.slice(0, 3).map((c: any, index: number) => ({
+              id: index + 1,
+              name: c.name || c.candidate_name || 'Unknown Candidate',
+              title: c.title || c.job_title || c.current_role || 'Professional',
+              company: c.company || c.current_company || 'Tech Company',
+              companyLogo: '🏢',
+              tenure: c.tenure || c.years_at_company ? `${c.years_at_company} year tenure` : '3+ years',
+              avatar: index === 0 ? '👨‍💼' : index === 1 ? '👩‍💼' : '👨‍💻',
+              isTopMatch: index === 0,
+              matchCriteria: {
+                role: c.match_criteria?.role !== false,
+                location: c.match_criteria?.location !== false,
+                experience: c.match_criteria?.experience !== false,
+                skills: c.match_criteria?.skills !== false
+              },
+              whyMatch: c.why_match || c.match_reason || c.summary || 'Strong candidate based on qualifications and experience.'
+            }));
+
+            setCandidates(mappedCandidates);
+            console.log('Loaded AI-generated candidates:', mappedCandidates);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading AI candidates:', error);
+        // Fall back to default candidates
+      }
     }
-  ]);
+  }, []);
 
   const handleContinue = () => {
     navigate('/next-page'); // Update to next page in flow
