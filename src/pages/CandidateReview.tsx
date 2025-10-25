@@ -143,7 +143,7 @@ const CandidateReview: React.FC = () => {
                 tenure: candidate.current_position?.tenure_years
                   ? `${candidate.current_position.tenure_years} year tenure`
                   : '3+ years',
-                avatar: index === 0 ? '👨‍💼' : index === 1 ? '👩‍💼' : '👨‍💻',
+                avatar: candidate.avatar_url || (index === 0 ? '👨‍💼' : index === 1 ? '👩‍💼' : '👨‍💻'),
                 isTopMatch: match.top_match === true || index === 0,
                 matchCriteria: {
                   role: rolePill ? rolePill.state === 'match' : true,
@@ -187,7 +187,13 @@ const CandidateReview: React.FC = () => {
           <div key={candidate.id} className="candidate-row">
             <div className="candidate-main-info">
               <div className="candidate-details">
-                <div className="candidate-avatar">{candidate.avatar}</div>
+                <div className="candidate-avatar">
+                  {candidate.avatar.startsWith('http') ? (
+                    <img src={candidate.avatar} alt={candidate.name} />
+                  ) : (
+                    candidate.avatar
+                  )}
+                </div>
                 <div className="candidate-text-info">
                   <div className="candidate-basic-info">
                     <h3 className="candidate-name">{candidate.name}</h3>
