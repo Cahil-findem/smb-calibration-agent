@@ -88,14 +88,13 @@ const RecipeLoader: React.FC = () => {
         {/* Header with Logo */}
         <div className="title-section">
           <div className="title-with-logo">
-            {!isComplete && (
-              <img
-                className="x-logo"
-                src="/AI Loader.gif"
-                alt="Logo"
-              />
-            )}
-            <h1 className="page-title" style={{ marginLeft: isComplete ? '0' : undefined }}>
+            <img
+              className="x-logo"
+              src="/AI Loader.gif"
+              alt="Logo"
+              style={{ opacity: isComplete ? 0 : 1, transition: 'opacity 0.3s ease' }}
+            />
+            <h1 className="page-title">
               {isComplete ? 'All done, hit continue when you are ready' : 'Great - hang tight while I understand your requirements'}
             </h1>
           </div>
