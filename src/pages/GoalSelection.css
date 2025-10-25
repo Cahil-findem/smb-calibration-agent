@@ -205,6 +205,19 @@
   cursor: not-allowed;
 }
 
+/* Button Processing State */
+.btn-processing {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-loader {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
 /* Animation classes */
 .animate-fade-up {
   animation: fadeUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;

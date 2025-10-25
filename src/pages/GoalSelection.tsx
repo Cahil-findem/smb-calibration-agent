@@ -133,7 +133,14 @@ const GoalSelection: React.FC = () => {
                 className={`btn btn-blue ${!jobDescription.trim() || isProcessing ? 'disabled' : ''}`}
                 onClick={handleContinue}
               >
-                {isProcessing ? 'Processing...' : 'Continue'}
+                {isProcessing ? (
+                  <span className="btn-processing">
+                    <img src="/AI Loader.gif" alt="Processing" className="btn-loader" />
+                    Processing...
+                  </span>
+                ) : (
+                  'Continue'
+                )}
               </div>
             </div>
           </div>
