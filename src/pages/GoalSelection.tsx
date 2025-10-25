@@ -7,6 +7,7 @@ const GoalSelection: React.FC = () => {
   const [jobDescription, setJobDescription] = useState<string>('');
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [transitionDirection, setTransitionDirection] = useState<'forward' | 'backward'>('forward');
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleJobDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
@@ -25,13 +26,54 @@ const GoalSelection: React.FC = () => {
     }
   };
 
-  const handleContinue = () => {
-    if (jobDescription.trim()) {
-      setTransitionDirection('forward');
-      setIsTransitioning(true);
-      setTimeout(() => {
-        navigate('/screening-questions');
-      }, 600);
+  const handleContinue = async () => {
+    if (jobDescription.trim() && !isProcessing) {
+      setIsProcessing(true);
+
+      try {
+        // Call OpenAI API to analyze job description
+        const response = await fetch('/api/analyze-job-description', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            role_brief: jobDescription,
+            appended_feedback: '',
+          }),
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          // Store the AI response in localStorage
+          const storedData = localStorage.getItem('demoSetupData');
+          if (storedData) {
+            try {
+              const demoData = JSON.parse(storedData);
+              demoData.aiAnalysis = data.response;
+              localStorage.setItem('demoSetupData', JSON.stringify(demoData));
+            } catch (error) {
+              console.error('Error updating demo setup data:', error);
+            }
+          }
+
+          // Navigate to next page
+          setTransitionDirection('forward');
+          setIsTransitioning(true);
+          setTimeout(() => {
+            navigate('/screening-questions');
+          }, 600);
+        } else {
+          console.error('API Error:', data.error);
+          alert('Error processing job description. Please try again.');
+        }
+      } catch (error) {
+        console.error('Network Error:', error);
+        alert('Network error. Please check your connection and try again.');
+      } finally {
+        setIsProcessing(false);
+      }
     }
   };
 
@@ -88,10 +130,10 @@ const GoalSelection: React.FC = () => {
 
             <div className="button-wrapper">
               <div
-                className={`btn btn-blue ${!jobDescription.trim() ? 'disabled' : ''}`}
+                className={`btn btn-blue ${!jobDescription.trim() || isProcessing ? 'disabled' : ''}`}
                 onClick={handleContinue}
               >
-                Continue
+                {isProcessing ? 'Processing...' : 'Continue'}
               </div>
             </div>
           </div>

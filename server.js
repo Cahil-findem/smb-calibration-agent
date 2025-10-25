@@ -52,6 +52,35 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
+// OpenAI Prompt API endpoint for job description analysis
+app.post('/api/analyze-job-description', async (req, res) => {
+  try {
+    const { role_brief, appended_feedback = '' } = req.body;
+
+    const response = await openai.responses.create({
+      prompt: {
+        id: 'pmpt_68fc0cf5731c8190ad4b3eed58fa8ba500f7b712f3a134f9',
+        version: '2',
+        variables: {
+          role_brief,
+          appended_feedback,
+        },
+      },
+    });
+
+    res.json({
+      success: true,
+      response: response,
+    });
+  } catch (error) {
+    console.error('OpenAI Prompt API Error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, 'dist')));
