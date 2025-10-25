@@ -95,7 +95,7 @@ app.post('/api/generate-screening-questions', async (req, res) => {
         },
         {
           role: 'user',
-          content: `Based on this job description, generate 3 screening questions that would help identify qualified candidates:\n\n${jobDescription}`,
+          content: `Based on this job description, generate 3 screening questions that would help disqualify unqualified candidates:\n\n${jobDescription}`,
         },
       ],
       temperature: 0.7,
