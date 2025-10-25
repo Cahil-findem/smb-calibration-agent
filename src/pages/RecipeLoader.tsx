@@ -15,29 +15,29 @@ const RecipeLoader: React.FC = () => {
   const [cards, setCards] = useState<LoadingCard[]>([
     {
       id: 1,
+      icon: 'article',
+      title: 'Reviewing your role and screening questions',
+      text: '',
+      visible: false
+    },
+    {
+      id: 2,
       icon: 'search',
       title: 'Analyzing candidate profiles',
       text: '',
       visible: false
     },
     {
-      id: 2,
-      icon: 'draw',
-      title: 'Crafting personalized outreach',
-      text: '',
-      visible: false
-    },
-    {
       id: 3,
-      icon: 'event',
-      title: 'Setting up communication schedule',
+      icon: 'work',
+      title: 'Understanding the role and responsibilities',
       text: '',
       visible: false
     },
     {
       id: 4,
-      icon: 'verified_user',
-      title: 'Finalizing campaign details',
+      icon: 'person',
+      title: 'Generating ideal candidate profiles',
       text: '',
       visible: false
     }
@@ -94,7 +94,7 @@ const RecipeLoader: React.FC = () => {
               alt="Logo"
             />
             <h1 className="page-title">
-              {isComplete ? 'All done, hit continue when you are ready' : 'Great - hang tight while I pull together your campaign preview'}
+              {isComplete ? 'All done, hit continue when you are ready' : 'Great - hang tight while I understand your requirements'}
             </h1>
           </div>
         </div>
