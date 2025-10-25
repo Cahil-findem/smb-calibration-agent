@@ -88,12 +88,14 @@ const RecipeLoader: React.FC = () => {
         {/* Header with Logo */}
         <div className="title-section">
           <div className="title-with-logo">
-            <img
-              className="x-logo"
-              src="/AI Loader.gif"
-              alt="Logo"
-            />
-            <h1 className="page-title">
+            {!isComplete && (
+              <img
+                className="x-logo"
+                src="/AI Loader.gif"
+                alt="Logo"
+              />
+            )}
+            <h1 className="page-title" style={{ marginLeft: isComplete ? '0' : undefined }}>
               {isComplete ? 'All done, hit continue when you are ready' : 'Great - hang tight while I understand your requirements'}
             </h1>
           </div>
@@ -106,9 +108,9 @@ const RecipeLoader: React.FC = () => {
               key={card.id}
               className={`loading-card ${card.visible ? 'visible' : ''}`}
             >
-              <div className="card-icon">
+              <div className={`card-icon ${isComplete ? 'completed' : ''}`}>
                 <span className="material-icons-round">
-                  {card.icon}
+                  {isComplete ? 'check_circle' : card.icon}
                 </span>
               </div>
               <div className="card-content">
