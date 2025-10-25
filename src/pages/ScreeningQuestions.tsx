@@ -52,7 +52,7 @@ const ScreeningQuestions: React.FC = () => {
       setTransitionDirection('forward');
       setIsTransitioning(true);
       setTimeout(() => {
-        navigate('/next-page'); // Update this to the next page in your flow
+        navigate('/recipe-loader');
       }, 600);
     }
   };

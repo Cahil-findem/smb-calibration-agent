@@ -5,6 +5,7 @@ import DemoSetup from './pages/DemoSetup'
 import Onboarding from './pages/Onboarding'
 import GoalSelection from './pages/GoalSelection'
 import ScreeningQuestions from './pages/ScreeningQuestions'
+import RecipeLoader from './pages/RecipeLoader'
 
 function App() {
   const navigate = useNavigate()
@@ -27,8 +28,8 @@ function App() {
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/goal-selection" element={<GoalSelection />} />
           <Route path="/screening-questions" element={<ScreeningQuestions />} />
+          <Route path="/recipe-loader" element={<RecipeLoader />} />
           {/* Other routes will be added here */}
-          {/* <Route path="/recipe-loader" element={<RecipeLoader />} /> */}
           {/* <Route path="/recipe2" element={<Recipe2 />} /> */}
         </Routes>
       </div>
