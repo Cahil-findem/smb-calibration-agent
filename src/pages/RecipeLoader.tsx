@@ -71,8 +71,7 @@ const RecipeLoader: React.FC = () => {
   }, []);
 
   const handleContinue = () => {
-    // Navigate to next page in your flow
-    navigate('/next-page'); // Update this to the next page
+    navigate('/candidate-review');
   };
 
   const handleRestartDemo = () => {

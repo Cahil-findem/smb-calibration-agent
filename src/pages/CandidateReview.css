@@ -1,0 +1,321 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600&display=swap');
+
+.candidate-review-container {
+  width: 100%;
+  min-height: 100vh;
+  background: white;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Header */
+.candidate-review-header {
+  width: 100%;
+  max-width: 900px;
+  margin-bottom: 32px;
+}
+
+.review-title {
+  color: #101828;
+  font-size: 24px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
+  line-height: 1.4;
+  margin: 0;
+  text-align: left;
+}
+
+/* Candidates List */
+.candidates-list {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-bottom: 32px;
+}
+
+/* Candidate Row */
+.candidate-row {
+  background: white;
+  border-bottom: 1px solid #DCDFEA;
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.candidate-main-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+/* Candidate Details */
+.candidate-details {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.candidate-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #C5E0FF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  flex-shrink: 0;
+}
+
+.candidate-text-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  justify-content: center;
+  width: 440px;
+  flex-shrink: 0;
+}
+
+.candidate-basic-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.candidate-name {
+  color: #101828;
+  font-size: 18px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
+  line-height: 24px;
+  margin: 0;
+}
+
+.candidate-current-job {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  line-height: 20px;
+  color: #465366;
+}
+
+.job-title {
+  color: #465366;
+}
+
+.job-at {
+  color: #969DAD;
+}
+
+.company-info {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.company-logo {
+  width: 18px;
+  height: 18px;
+  border: 1px solid #EAECF0;
+  border-radius: 50%;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+
+.company-name {
+  color: #465366;
+}
+
+.company-tenure {
+  color: #465366;
+}
+
+/* Match Chips */
+.match-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px 3px 8px;
+  border-radius: 16px;
+  font-size: 14px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.chip-top-match {
+  background: #F6F4FF;
+}
+
+.chip-top-match .chip-icon {
+  color: #735BF3;
+  font-size: 14px;
+}
+
+.chip-top-match .chip-label {
+  color: #4A2EDF;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+.chip-match {
+  background: #E0FFE9;
+}
+
+.chip-match .chip-icon {
+  color: #207C39;
+  font-size: 14px;
+}
+
+.chip-match .chip-label {
+  color: #207C39;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+.chip-icon {
+  font-family: 'Material Icons Round', sans-serif;
+  font-style: normal;
+  line-height: normal;
+}
+
+/* Why Match Section */
+.why-match-section {
+  background: white;
+  border: 1px solid #B6ECF8;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.why-match-title {
+  color: #101828;
+  font-size: 14px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
+  line-height: 20px;
+  margin: 0;
+}
+
+.why-match-text {
+  color: #101828;
+  font-size: 14px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  line-height: 20px;
+  margin: 0;
+}
+
+/* Action Buttons */
+.review-actions {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-start;
+}
+
+/* Button Styles */
+.btn {
+  padding: 10px 12px;
+  border-radius: 6px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-size: 16px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: #101828;
+  border: 1px solid #E5E7EB;
+}
+
+.btn-secondary:hover {
+  background: #F9FAFB;
+  border-color: #D1D5DB;
+}
+
+.btn-secondary:active {
+  background: #F3F4F6;
+}
+
+.btn-blue {
+  background: #4599FA;
+  color: white;
+}
+
+.btn-blue:hover {
+  background: #3280E8;
+}
+
+.btn-blue:active {
+  background: #2563EB;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .candidate-review-container {
+    padding: 20px 16px;
+  }
+
+  .review-title {
+    font-size: 20px;
+  }
+
+  .candidate-row {
+    padding: 20px 16px;
+  }
+
+  .candidate-text-info {
+    width: auto;
+    flex-shrink: 1;
+  }
+
+  .candidate-avatar {
+    width: 48px;
+    height: 48px;
+    font-size: 24px;
+  }
+
+  .candidate-name {
+    font-size: 16px;
+  }
+
+  .candidate-current-job {
+    font-size: 12px;
+    flex-wrap: wrap;
+  }
+}
