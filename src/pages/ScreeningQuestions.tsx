@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ScreeningQuestions.css';
 
@@ -11,6 +11,21 @@ const ScreeningQuestions: React.FC = () => {
   ]);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [transitionDirection, setTransitionDirection] = useState<'forward' | 'backward'>('forward');
+
+  useEffect(() => {
+    // Load generated screening questions from localStorage
+    const storedData = localStorage.getItem('demoSetupData');
+    if (storedData) {
+      try {
+        const demoData = JSON.parse(storedData);
+        if (demoData.screeningQuestions && Array.isArray(demoData.screeningQuestions) && demoData.screeningQuestions.length === 3) {
+          setQuestions(demoData.screeningQuestions);
+        }
+      } catch (error) {
+        console.error('Error loading screening questions:', error);
+      }
+    }
+  }, []);
 
   const handleQuestionChange = (index: number, value: string) => {
     const updatedQuestions = [...questions];

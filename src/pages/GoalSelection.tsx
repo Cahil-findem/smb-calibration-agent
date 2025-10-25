@@ -31,27 +31,40 @@ const GoalSelection: React.FC = () => {
       setIsProcessing(true);
 
       try {
-        // Call OpenAI API to analyze job description
-        const response = await fetch('/api/analyze-job-description', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            role_brief: jobDescription,
-            appended_feedback: '',
+        // Call both APIs in parallel
+        const [analysisResponse, questionsResponse] = await Promise.all([
+          fetch('/api/analyze-job-description', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              role_brief: jobDescription,
+              appended_feedback: '',
+            }),
           }),
-        });
+          fetch('/api/generate-screening-questions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              jobDescription: jobDescription,
+            }),
+          }),
+        ]);
 
-        const data = await response.json();
+        const analysisData = await analysisResponse.json();
+        const questionsData = await questionsResponse.json();
 
-        if (data.success) {
-          // Store the AI response in localStorage
+        if (analysisData.success && questionsData.success) {
+          // Store both responses in localStorage
           const storedData = localStorage.getItem('demoSetupData');
           if (storedData) {
             try {
               const demoData = JSON.parse(storedData);
-              demoData.aiAnalysis = data.response;
+              demoData.aiAnalysis = analysisData.response;
+              demoData.screeningQuestions = questionsData.questions;
               localStorage.setItem('demoSetupData', JSON.stringify(demoData));
             } catch (error) {
               console.error('Error updating demo setup data:', error);
@@ -65,7 +78,7 @@ const GoalSelection: React.FC = () => {
             navigate('/screening-questions');
           }, 600);
         } else {
-          console.error('API Error:', data.error);
+          console.error('API Error:', analysisData.error || questionsData.error);
           alert('Error processing job description. Please try again.');
         }
       } catch (error) {
