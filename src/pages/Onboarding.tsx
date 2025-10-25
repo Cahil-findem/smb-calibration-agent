@@ -61,7 +61,7 @@ const Onboarding: React.FC = () => {
     if (currentStep === 1) {
       return {
         greeting: `Hey ${userName} 👋`,
-        message: "I'm Nova, I'll be taking care of your search from end to end!"
+        message: "I'm Sia, I'll be taking care of your search from end to end!"
       };
     } else {
       return {
