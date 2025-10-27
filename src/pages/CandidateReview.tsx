@@ -208,7 +208,7 @@ const CandidateReview: React.FC = () => {
               src="/AI%20Loader.gif"
               alt="AI Logo"
             />
-            <h1 className="review-title">These candidates seem like strong fits. What do you think?</h1>
+            <h1 className="review-title">Do these candidates feel like a strong fit?</h1>
           </div>
           <div className="header-buttons">
             <button className="header-btn-secondary" onClick={handleBack}>
