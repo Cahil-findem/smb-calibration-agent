@@ -104,6 +104,47 @@ app.post('/api/analyze-job-description', async (req, res) => {
       parsedContent = content;
     }
 
+    // Generate avatars for each candidate using DALL-E
+    if (Array.isArray(parsedContent)) {
+      console.log('Generating avatars for candidates...');
+      const avatarPromises = parsedContent.map(async (item) => {
+        try {
+          const candidate = item.candidate || item;
+          const candidateName = candidate.full_name || candidate.name || 'Professional';
+          const title = candidate.current_position?.title || candidate.title || 'Professional';
+
+          console.log(`Generating avatar for ${candidateName}...`);
+
+          const prompt = `Professional corporate headshot photograph of a young business professional named ${candidateName}, working as a ${title}. Clean, minimalist background, contemporary professional clothing, friendly and confident expression, well-lit modern studio photography, LinkedIn profile style`;
+
+          const imageResponse = await openai.images.generate({
+            model: "dall-e-3",
+            prompt: prompt,
+            n: 1,
+            size: "1024x1024",
+            quality: "standard",
+          });
+
+          const avatarUrl = imageResponse.data[0].url;
+          console.log(`Generated avatar for ${candidateName}: ${avatarUrl}`);
+
+          // Add avatar URL to candidate data
+          if (item.candidate) {
+            item.candidate.avatar_url = avatarUrl;
+          } else {
+            item.avatar_url = avatarUrl;
+          }
+        } catch (error) {
+          console.error(`Error generating avatar for candidate:`, error.message);
+          // Continue without avatar if generation fails
+        }
+      });
+
+      // Wait for all avatars to be generated
+      await Promise.all(avatarPromises);
+      console.log('All avatars generated successfully');
+    }
+
     res.json({
       success: true,
       response: parsedContent,
