@@ -33,14 +33,15 @@
   max-width: 900px;
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 16px;
   margin-bottom: 32px;
 }
 
 /* Candidate Row */
 .candidate-row {
   background: white;
-  border-bottom: 1px solid #DCDFEA;
+  border: 1px solid #DCDFEA;
+  border-radius: 12px;
   padding: 28px 24px;
   display: flex;
   flex-direction: column;
