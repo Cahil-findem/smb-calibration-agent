@@ -67,25 +67,18 @@ export default async function handler(req, res) {
       parsedContent = content;
     }
 
-    // Assign avatars from static pool (instant, no API calls)
+    // Assign avatars from local pool with random selection
     if (Array.isArray(parsedContent)) {
-      console.log('Assigning avatars from static pool...');
+      console.log('Assigning avatars from local pool...');
 
-      // Curated professional headshot pool
-      const AVATAR_POOL = [
-        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=faces',
-        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop&crop=faces',
-        'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=faces',
-        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop&crop=faces',
-        'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop&crop=faces',
-        'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=400&fit=crop&crop=faces',
-        'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop&crop=faces',
-        'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&h=400&fit=crop&crop=faces',
-        'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?w=400&h=400&fit=crop&crop=faces',
-      ];
+      // Local avatar pool (20 professional headshots)
+      const AVATAR_POOL = Array.from({ length: 20 }, (_, i) => `/avatars/avatar-${i + 1}.jpg`);
+
+      // Shuffle array for random selection
+      const shuffledAvatars = [...AVATAR_POOL].sort(() => Math.random() - 0.5);
 
       parsedContent.forEach((item, index) => {
-        const avatarUrl = AVATAR_POOL[index % AVATAR_POOL.length];
+        const avatarUrl = shuffledAvatars[index % shuffledAvatars.length];
 
         // Add avatar URL to candidate data
         if (item.candidate) {
