@@ -31,39 +31,57 @@ const GoalSelection: React.FC = () => {
       setIsProcessing(true);
 
       try {
-        // Call both APIs in parallel
-        const [analysisResponse, questionsResponse] = await Promise.all([
-          fetch('/api/analyze-job-description', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              role_brief: jobDescription,
-              appended_feedback: '',
-            }),
+        // Start candidate analysis in the background (don't wait for it)
+        const analysisPromise = fetch('/api/analyze-job-description', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            role_brief: jobDescription,
+            appended_feedback: '',
           }),
-          fetch('/api/generate-screening-questions', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              jobDescription: jobDescription,
-            }),
-          }),
-        ]);
+        }).then(async (response) => {
+          const analysisData = await response.json();
+          if (analysisData.success) {
+            // Store analysis results when ready
+            const storedData = localStorage.getItem('demoSetupData');
+            if (storedData) {
+              try {
+                const demoData = JSON.parse(storedData);
+                demoData.aiAnalysis = analysisData.response;
+                localStorage.setItem('demoSetupData', JSON.stringify(demoData));
+                console.log('Candidate analysis completed and stored');
+              } catch (error) {
+                console.error('Error storing analysis data:', error);
+              }
+            }
+          } else {
+            console.error('Analysis API Error:', analysisData.error);
+          }
+        }).catch((error) => {
+          console.error('Analysis Network Error:', error);
+        });
 
-        const analysisData = await analysisResponse.json();
+        // Wait only for screening questions before navigating
+        const questionsResponse = await fetch('/api/generate-screening-questions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            jobDescription: jobDescription,
+          }),
+        });
+
         const questionsData = await questionsResponse.json();
 
-        if (analysisData.success && questionsData.success) {
-          // Store both responses in localStorage
+        if (questionsData.success) {
+          // Store screening questions
           const storedData = localStorage.getItem('demoSetupData');
           if (storedData) {
             try {
               const demoData = JSON.parse(storedData);
-              demoData.aiAnalysis = analysisData.response;
               demoData.screeningQuestions = questionsData.questions;
               localStorage.setItem('demoSetupData', JSON.stringify(demoData));
             } catch (error) {
@@ -71,15 +89,15 @@ const GoalSelection: React.FC = () => {
             }
           }
 
-          // Navigate to next page
+          // Navigate to next page immediately
           setTransitionDirection('forward');
           setIsTransitioning(true);
           setTimeout(() => {
             navigate('/screening-questions');
           }, 600);
         } else {
-          console.error('API Error:', analysisData.error || questionsData.error);
-          alert('Error processing job description. Please try again.');
+          console.error('Questions API Error:', questionsData.error);
+          alert('Error generating screening questions. Please try again.');
         }
       } catch (error) {
         console.error('Network Error:', error);
