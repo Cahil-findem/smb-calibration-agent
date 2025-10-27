@@ -159,32 +159,34 @@ const GoalSelection: React.FC = () => {
             />
           </div>
 
-          <div className={`buttons-container ${isTransitioning ? (transitionDirection === 'forward' ? 'animate-fade-out-up' : 'animate-fade-out-down') : 'animate-fade-up animate-delay-2'}`}>
-            <div className="button-wrapper">
-              <div
-                className="btn btn-secondary"
-                onClick={handleBack}
-              >
-                Back
+          {!isProcessing ? (
+            <div className={`buttons-container ${isTransitioning ? (transitionDirection === 'forward' ? 'animate-fade-out-up' : 'animate-fade-out-down') : 'animate-fade-up animate-delay-2'}`}>
+              <div className="button-wrapper">
+                <div
+                  className="btn btn-secondary"
+                  onClick={handleBack}
+                >
+                  Back
+                </div>
               </div>
-            </div>
 
-            <div className="button-wrapper">
-              <div
-                className={`btn btn-blue ${!jobDescription.trim() || isProcessing ? 'disabled' : ''}`}
-                onClick={handleContinue}
-              >
-                {isProcessing ? (
-                  <span className="btn-processing">
-                    <img src="/AI Loader.gif" alt="Processing" className="btn-loader" />
-                    Processing...
-                  </span>
-                ) : (
-                  'Continue'
-                )}
+              <div className="button-wrapper">
+                <div
+                  className={`btn btn-blue ${!jobDescription.trim() ? 'disabled' : ''}`}
+                  onClick={handleContinue}
+                >
+                  Continue
+                </div>
               </div>
             </div>
-          </div>
+          ) : (
+            <div className="loading-chip-container">
+              <div className="loading-chip">
+                <img src="/AI Loader.gif" alt="Loading" className="loading-chip-spinner" />
+                <span className="loading-chip-text">Generating screening questions</span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
