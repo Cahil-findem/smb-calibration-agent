@@ -108,7 +108,7 @@ app.post('/api/analyze-job-description', async (req, res) => {
           const title = candidate.candidate?.current_position?.title || 'Professional';
 
           // Create a prompt for a professional headshot
-          const prompt = `Professional corporate headshot photograph of a business professional named ${candidateName}, working as a ${title}. High quality, neutral background, professional attire, friendly and confident expression, well-lit studio photography, LinkedIn profile style`;
+          const prompt = `Professional corporate headshot photograph of a young business professional named ${candidateName}, working as a ${title}. Clean, minimalist background, contemporary professional clothing, friendly and confident expression, well-lit modern studio photography, LinkedIn profile style`;
 
           try {
             const imageResponse = await openai.images.generate({
