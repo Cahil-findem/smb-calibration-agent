@@ -135,6 +135,10 @@ const CandidateReview: React.FC = () => {
               const match = item.match || {};
               const facetPills = match.facet_pills || [];
 
+              console.log(`Candidate ${index + 1} match data:`, match);
+              console.log(`why_rich:`, match.why_rich);
+              console.log(`why_summary:`, match.why_summary);
+
               // Helper to check match criteria from facet pills
               const rolePill = facetPills.find((p: any) => p.label === 'Role');
               const locationPill = facetPills.find((p: any) => p.label === 'Location');

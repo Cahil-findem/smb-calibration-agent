@@ -90,61 +90,13 @@ app.post('/api/analyze-job-description', async (req, res) => {
       try {
         parsedContent = JSON.parse(content);
         console.log('Successfully parsed candidate data');
+        console.log('First candidate match data:', JSON.stringify(parsedContent[0]?.match, null, 2));
       } catch (error) {
         console.error('Failed to parse JSON:', error);
         parsedContent = content; // Fall back to raw string
       }
     } else {
       parsedContent = content;
-    }
-
-    // Generate photorealistic avatars for each candidate using DALL-E
-    if (Array.isArray(parsedContent) && parsedContent.length > 0) {
-      console.log('Generating avatars for candidates...');
-
-      try {
-        const avatarPromises = parsedContent.map(async (candidate, index) => {
-          const candidateName = candidate.candidate?.full_name || `Candidate ${index + 1}`;
-          const title = candidate.candidate?.current_position?.title || 'Professional';
-
-          // Create a prompt for a professional headshot
-          const prompt = `Professional corporate headshot photograph of a young business professional named ${candidateName}, working as a ${title}. Clean, minimalist background, contemporary professional clothing, friendly and confident expression, well-lit modern studio photography, LinkedIn profile style`;
-
-          try {
-            const imageResponse = await openai.images.generate({
-              model: "dall-e-3",
-              prompt: prompt,
-              n: 1,
-              size: "1024x1024",
-              quality: "standard",
-              style: "natural"
-            });
-
-            return imageResponse.data[0].url;
-          } catch (error) {
-            console.error(`Error generating avatar for ${candidateName}:`, error.message);
-            return null;
-          }
-        });
-
-        const avatarUrls = await Promise.all(avatarPromises);
-
-        // Add avatar URLs to candidates
-        parsedContent.forEach((candidate, index) => {
-          if (avatarUrls[index]) {
-            if (candidate.candidate) {
-              candidate.candidate.avatar_url = avatarUrls[index];
-            } else {
-              candidate.avatar_url = avatarUrls[index];
-            }
-          }
-        });
-
-        console.log('Avatars generated successfully');
-      } catch (error) {
-        console.error('Error generating avatars:', error);
-        // Continue without avatars if generation fails
-      }
     }
 
     res.json({
