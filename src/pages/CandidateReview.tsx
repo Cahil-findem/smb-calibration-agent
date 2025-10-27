@@ -181,17 +181,11 @@ const CandidateReview: React.FC = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollContainer = document.querySelector('.candidate-review-container');
-      if (scrollContainer) {
-        setIsScrolled(scrollContainer.scrollTop > 0);
-      }
+      setIsScrolled(window.scrollY > 0);
     };
 
-    const scrollContainer = document.querySelector('.candidate-review-container');
-    if (scrollContainer) {
-      scrollContainer.addEventListener('scroll', handleScroll);
-      return () => scrollContainer.removeEventListener('scroll', handleScroll);
-    }
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const handleContinue = () => {
@@ -208,7 +202,14 @@ const CandidateReview: React.FC = () => {
       <div className={`sticky-header ${isScrolled ? 'scrolled' : ''}`}>
         {/* Header */}
         <div className="title-section">
-          <h1 className="review-title">These candidates seem like strong fits. What do you think?</h1>
+          <div className="title-with-logo">
+            <img
+              className="x-logo"
+              src="/AI%20Loader.gif"
+              alt="AI Logo"
+            />
+            <h1 className="review-title">These candidates seem like strong fits. What do you think?</h1>
+          </div>
           <div className="header-buttons">
             <button className="header-btn-secondary" onClick={handleBack}>
               Back
