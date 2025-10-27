@@ -97,13 +97,13 @@ const GoalSelection: React.FC = () => {
             }
           }
 
-          // Navigate to next page immediately
-          console.log('Navigating to screening questions page...');
+          // Navigate to recipe loader page immediately
+          console.log('Navigating to recipe loader page...');
           console.timeEnd('Total time to navigate');
           setTransitionDirection('forward');
           setIsTransitioning(true);
           setTimeout(() => {
-            navigate('/screening-questions');
+            navigate('/recipe-loader');
           }, 600);
         } else {
           console.error('Questions API Error:', questionsData.error);

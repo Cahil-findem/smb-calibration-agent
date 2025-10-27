@@ -60,14 +60,39 @@ const RecipeLoader: React.FC = () => {
       showCard(index);
     });
 
-    // Show continue button 2 seconds after the last card appears
-    const showContinueTimer = setTimeout(() => {
-      setShowContinue(true);
-      setIsComplete(true);
-    }, (cards.length * 1800) + 2000);
+    // Poll localStorage for candidate data
+    const checkForCandidates = () => {
+      const storedData = localStorage.getItem('demoSetupData');
+      if (storedData) {
+        try {
+          const demoData = JSON.parse(storedData);
+          if (demoData.aiAnalysis && Array.isArray(demoData.aiAnalysis) && demoData.aiAnalysis.length > 0) {
+            console.log('Candidate data loaded! Showing completed state.');
+            setShowContinue(true);
+            setIsComplete(true);
+            return true;
+          }
+        } catch (error) {
+          console.error('Error checking for candidates:', error);
+        }
+      }
+      return false;
+    };
 
-    // Cleanup timer on unmount
-    return () => clearTimeout(showContinueTimer);
+    // Check immediately
+    if (checkForCandidates()) {
+      return;
+    }
+
+    // Poll every second for candidate data
+    const pollInterval = setInterval(() => {
+      if (checkForCandidates()) {
+        clearInterval(pollInterval);
+      }
+    }, 1000);
+
+    // Cleanup
+    return () => clearInterval(pollInterval);
   }, []);
 
   const handleContinue = () => {

@@ -88,9 +88,8 @@ const CandidateReview: React.FC = () => {
 
   useEffect(() => {
     // Load AI-generated candidates from localStorage
-    const loadCandidates = () => {
-      const storedData = localStorage.getItem('demoSetupData');
-      console.log('Raw localStorage data:', storedData);
+    const storedData = localStorage.getItem('demoSetupData');
+    console.log('Raw localStorage data:', storedData);
 
     if (storedData) {
       try {
@@ -177,30 +176,6 @@ const CandidateReview: React.FC = () => {
         // Fall back to default candidates
       }
     }
-    };
-
-    // Load candidates initially
-    loadCandidates();
-
-    // Listen for localStorage changes (when background API completes)
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'demoSetupData') {
-        console.log('localStorage updated, reloading candidates...');
-        loadCandidates();
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-
-    // Also poll localStorage every 2 seconds for same-tab updates
-    const pollInterval = setInterval(() => {
-      loadCandidates();
-    }, 2000);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      clearInterval(pollInterval);
-    };
   }, []);
 
   const handleContinue = () => {
