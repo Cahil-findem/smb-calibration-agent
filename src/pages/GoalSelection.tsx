@@ -29,9 +29,12 @@ const GoalSelection: React.FC = () => {
   const handleContinue = async () => {
     if (jobDescription.trim() && !isProcessing) {
       setIsProcessing(true);
+      console.time('Total time to navigate');
+      console.time('Screening questions API');
 
       try {
         // Start candidate analysis in the background (don't wait for it)
+        console.log('Starting candidate analysis in background...');
         fetch('/api/analyze-job-description', {
           method: 'POST',
           headers: {
@@ -64,6 +67,7 @@ const GoalSelection: React.FC = () => {
         });
 
         // Wait only for screening questions before navigating
+        console.log('Fetching screening questions...');
         const questionsResponse = await fetch('/api/generate-screening-questions', {
           method: 'POST',
           headers: {
@@ -73,10 +77,14 @@ const GoalSelection: React.FC = () => {
             jobDescription: jobDescription,
           }),
         });
+        console.timeEnd('Screening questions API');
 
+        console.log('Parsing screening questions response...');
         const questionsData = await questionsResponse.json();
+        console.log('Screening questions data:', questionsData);
 
         if (questionsData.success) {
+          console.log('Storing screening questions...');
           // Store screening questions
           const storedData = localStorage.getItem('demoSetupData');
           if (storedData) {
@@ -90,6 +98,8 @@ const GoalSelection: React.FC = () => {
           }
 
           // Navigate to next page immediately
+          console.log('Navigating to screening questions page...');
+          console.timeEnd('Total time to navigate');
           setTransitionDirection('forward');
           setIsTransitioning(true);
           setTimeout(() => {
