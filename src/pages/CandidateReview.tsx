@@ -18,6 +18,13 @@ interface Candidate {
     skills: boolean;
   };
   whyMatch: string;
+  whyRich?: {
+    text: string;
+    highlights: Array<{
+      phrase: string;
+      category: string;
+    }>;
+  };
 }
 
 // Default fallback candidates
@@ -151,7 +158,8 @@ const CandidateReview: React.FC = () => {
                   experience: experiencePill ? experiencePill.state === 'match' : true,
                   skills: skillsPill ? skillsPill.state === 'match' : true
                 },
-                whyMatch: match.why_summary || match.why_rich?.text || 'Strong candidate based on qualifications and experience.'
+                whyMatch: match.why_rich?.text || match.why_summary || 'Strong candidate based on qualifications and experience.',
+                whyRich: match.why_rich
               };
             });
 
@@ -249,6 +257,15 @@ const CandidateReview: React.FC = () => {
             <div className="why-match-section">
               <h4 className="why-match-title">Why they're a match</h4>
               <p className="why-match-text">{candidate.whyMatch}</p>
+              {candidate.whyRich && candidate.whyRich.highlights && candidate.whyRich.highlights.length > 0 && (
+                <div className="why-highlights">
+                  {candidate.whyRich.highlights.map((highlight, idx) => (
+                    <span key={idx} className={`highlight-tag highlight-${highlight.category}`}>
+                      {highlight.phrase}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         ))}
