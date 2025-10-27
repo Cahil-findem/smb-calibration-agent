@@ -94,12 +94,12 @@ const ScreeningQuestions: React.FC = () => {
             {questions.map((question, index) => (
               <div key={index} className="question-item">
                 <div className="question-number">{index + 1}</div>
-                <input
-                  type="text"
+                <textarea
                   className="question-input"
                   value={question}
                   onChange={(e) => handleQuestionChange(index, e.target.value)}
                   placeholder={`Question ${index + 1}`}
+                  rows={2}
                 />
               </div>
             ))}
