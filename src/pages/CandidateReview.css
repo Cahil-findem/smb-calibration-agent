@@ -19,11 +19,13 @@
   width: 100%;
   max-width: 900px;
   margin-bottom: 32px;
-  transition: padding-top 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .sticky-header.scrolled {
   padding-top: 20px;
+  padding-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 /* Title Section */
