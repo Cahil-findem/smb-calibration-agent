@@ -90,7 +90,12 @@ app.post('/api/analyze-job-description', async (req, res) => {
       try {
         parsedContent = JSON.parse(content);
         console.log('Successfully parsed candidate data');
-        console.log('First candidate match data:', JSON.stringify(parsedContent[0]?.match, null, 2));
+        console.log('=== CANDIDATE STRUCTURE ANALYSIS ===');
+        console.log('First candidate match keys:', Object.keys(parsedContent[0]?.match || {}));
+        console.log('First candidate match.why_summary:', parsedContent[0]?.match?.why_summary);
+        console.log('First candidate match.why_rich:', parsedContent[0]?.match?.why_rich);
+        console.log('Full first candidate match:', JSON.stringify(parsedContent[0]?.match, null, 2));
+        console.log('====================================');
       } catch (error) {
         console.error('Failed to parse JSON:', error);
         parsedContent = content; // Fall back to raw string
