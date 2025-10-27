@@ -165,35 +165,49 @@ app.post('/api/generate-screening-questions', async (req, res) => {
   try {
     const { jobDescription } = req.body;
 
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4',
-      messages: [
-        {
-          role: 'system',
-          content: 'You are a helpful assistant that generates relevant screening questions for job candidates. Generate exactly 3 screening questions based on the job description provided. Return only the questions as a JSON array of strings, without any additional text or formatting.',
+    const response = await openai.responses.create({
+      prompt: {
+        id: 'pmpt_68fc1322df1c8190a61f43b096b278ee0cde8553711b2931',
+        version: '1',
+        variables: {
+          role_brief: jobDescription,
         },
-        {
-          role: 'user',
-          content: `Based on this job description, generate 3 screening questions that would help disqualify unqualified candidates:\n\n${jobDescription}`,
-        },
-      ],
-      temperature: 0.7,
+      },
     });
 
-    const responseText = completion.choices[0].message.content.trim();
+    console.log('OpenAI Screening Questions Response:', JSON.stringify(response, null, 2));
 
-    // Try to parse as JSON, or create questions from the response
+    // Extract the actual content from the response
+    let content = null;
+
+    if (response.output && Array.isArray(response.output)) {
+      // Find the message output
+      const messageOutput = response.output.find(item => item.type === 'message');
+      if (messageOutput && messageOutput.content && messageOutput.content[0]) {
+        content = messageOutput.content[0].text;
+      }
+    }
+
+    console.log('Extracted Questions Content (raw):', content);
+
+    // Parse the JSON string
     let questions;
-    try {
-      questions = JSON.parse(responseText);
-    } catch {
-      // If not valid JSON, split by newlines and clean up
-      questions = responseText
-        .split('\n')
-        .filter(line => line.trim().length > 0)
-        .map(line => line.replace(/^[\d\.\-\*\s]+/, '').trim())
-        .filter(line => line.length > 0)
-        .slice(0, 3);
+    if (typeof content === 'string') {
+      try {
+        questions = JSON.parse(content);
+        console.log('Successfully parsed screening questions');
+      } catch (error) {
+        console.error('Failed to parse JSON:', error);
+        // Fallback parsing
+        questions = content
+          .split('\n')
+          .filter(line => line.trim().length > 0)
+          .map(line => line.replace(/^[\d\.\-\*\s]+/, '').trim())
+          .filter(line => line.length > 0)
+          .slice(0, 3);
+      }
+    } else {
+      questions = content;
     }
 
     // Ensure we have exactly 3 questions
