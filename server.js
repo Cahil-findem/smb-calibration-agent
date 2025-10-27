@@ -194,8 +194,20 @@ app.post('/api/generate-screening-questions', async (req, res) => {
     let questions;
     if (typeof content === 'string') {
       try {
-        questions = JSON.parse(content);
-        console.log('Successfully parsed screening questions');
+        // Clean up malformed JSON (sometimes OpenAI adds extra quotes)
+        const cleanedContent = content.replace(/"id":\s*(\d+)"/g, '"id": $1');
+        const parsedData = JSON.parse(cleanedContent);
+        console.log('Successfully parsed screening questions:', parsedData);
+
+        // Extract questions array from the response structure
+        if (parsedData.screening_questions && Array.isArray(parsedData.screening_questions)) {
+          // Map the question objects to just the question text
+          questions = parsedData.screening_questions.map(q => q.question);
+        } else if (Array.isArray(parsedData)) {
+          questions = parsedData;
+        } else {
+          questions = parsedData;
+        }
       } catch (error) {
         console.error('Failed to parse JSON:', error);
         // Fallback parsing
