@@ -32,7 +32,7 @@ const GoalSelection: React.FC = () => {
 
       try {
         // Start candidate analysis in the background (don't wait for it)
-        const analysisPromise = fetch('/api/analyze-job-description', {
+        fetch('/api/analyze-job-description', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
