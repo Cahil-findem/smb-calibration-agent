@@ -104,54 +104,35 @@ app.post('/api/analyze-job-description', async (req, res) => {
       parsedContent = content;
     }
 
-    // Fetch avatars for each candidate from Unsplash
+    // Assign avatars from static pool (instant, no API calls)
     if (Array.isArray(parsedContent)) {
-      console.log('Fetching avatars from Unsplash...');
+      console.log('Assigning avatars from static pool...');
 
-      // Search queries for variety
-      const queries = ['professional headshot', 'business portrait', 'corporate headshot'];
+      // Curated professional headshot pool
+      const AVATAR_POOL = [
+        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=faces',
+        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop&crop=faces',
+        'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=faces',
+        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop&crop=faces',
+        'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop&crop=faces',
+        'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=400&fit=crop&crop=faces',
+        'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop&crop=faces',
+        'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&h=400&fit=crop&crop=faces',
+        'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?w=400&h=400&fit=crop&crop=faces',
+      ];
 
-      const avatarPromises = parsedContent.map(async (item, index) => {
-        try {
-          const candidate = item.candidate || item;
-          const candidateName = candidate.full_name || candidate.name || 'Professional';
+      parsedContent.forEach((item, index) => {
+        const avatarUrl = AVATAR_POOL[index % AVATAR_POOL.length];
 
-          console.log(`Fetching avatar for ${candidateName}...`);
-
-          // Rotate through different search queries for variety
-          const query = queries[index % queries.length];
-
-          const unsplashUrl = `https://api.unsplash.com/photos/random?query=${encodeURIComponent(query)}&orientation=portrait&content_filter=high`;
-
-          const response = await fetch(unsplashUrl, {
-            headers: {
-              'Authorization': `Client-ID ${process.env.UNSPLASH_ACCESS_KEY || 'your-unsplash-access-key'}`
-            }
-          });
-
-          if (response.ok) {
-            const data = await response.json();
-            const avatarUrl = data.urls.regular; // Use 'regular' size (1080px)
-            console.log(`Fetched avatar for ${candidateName}: ${avatarUrl}`);
-
-            // Add avatar URL to candidate data
-            if (item.candidate) {
-              item.candidate.avatar_url = avatarUrl;
-            } else {
-              item.avatar_url = avatarUrl;
-            }
-          } else {
-            console.error(`Failed to fetch avatar for ${candidateName}:`, response.statusText);
-          }
-        } catch (error) {
-          console.error(`Error fetching avatar for candidate:`, error.message);
-          // Continue without avatar if fetch fails
+        // Add avatar URL to candidate data
+        if (item.candidate) {
+          item.candidate.avatar_url = avatarUrl;
+        } else {
+          item.avatar_url = avatarUrl;
         }
       });
 
-      // Wait for all avatars to be fetched
-      await Promise.all(avatarPromises);
-      console.log('All avatars fetched successfully');
+      console.log('Avatars assigned successfully');
     }
 
     res.json({
