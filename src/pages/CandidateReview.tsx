@@ -85,6 +85,7 @@ const defaultCandidates: Candidate[] = [
 const CandidateReview: React.FC = () => {
   const navigate = useNavigate();
   const [candidates, setCandidates] = useState<Candidate[]>(defaultCandidates);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     // Load AI-generated candidates from localStorage
@@ -178,6 +179,21 @@ const CandidateReview: React.FC = () => {
     }
   }, []);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollContainer = document.querySelector('.candidate-review-container');
+      if (scrollContainer) {
+        setIsScrolled(scrollContainer.scrollTop > 0);
+      }
+    };
+
+    const scrollContainer = document.querySelector('.candidate-review-container');
+    if (scrollContainer) {
+      scrollContainer.addEventListener('scroll', handleScroll);
+      return () => scrollContainer.removeEventListener('scroll', handleScroll);
+    }
+  }, []);
+
   const handleContinue = () => {
     navigate('/next-page'); // Update to next page in flow
   };
@@ -188,9 +204,23 @@ const CandidateReview: React.FC = () => {
 
   return (
     <div className="candidate-review-container">
-      {/* Header */}
-      <div className="candidate-review-header">
-        <h1 className="review-title">These candidates seem like strong fits. What do you think?</h1>
+      {/* Sticky Header Container */}
+      <div className={`sticky-header ${isScrolled ? 'scrolled' : ''}`}>
+        {/* Header */}
+        <div className="title-section">
+          <h1 className="review-title">These candidates seem like strong fits. What do you think?</h1>
+          <div className="header-buttons">
+            <button className="header-btn-secondary" onClick={handleBack}>
+              Back
+            </button>
+            <button className="header-btn-primary" onClick={handleContinue}>
+              Continue
+            </button>
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div className="header-divider"></div>
       </div>
 
       {/* Candidates List */}
@@ -273,16 +303,6 @@ const CandidateReview: React.FC = () => {
             </div>
           </div>
         ))}
-      </div>
-
-      {/* Action Buttons */}
-      <div className="review-actions">
-        <button className="btn btn-secondary" onClick={handleBack}>
-          Back
-        </button>
-        <button className="btn btn-blue" onClick={handleContinue}>
-          Continue
-        </button>
       </div>
     </div>
   );
