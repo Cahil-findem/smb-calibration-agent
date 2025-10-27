@@ -212,10 +212,10 @@ const CandidateReview: React.FC = () => {
           </div>
           <div className="header-buttons">
             <button className="header-btn-secondary" onClick={handleBack}>
-              Back
+              Request Changes
             </button>
             <button className="header-btn-primary" onClick={handleContinue}>
-              Continue
+              Launch Search
             </button>
           </div>
         </div>
