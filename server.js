@@ -104,45 +104,54 @@ app.post('/api/analyze-job-description', async (req, res) => {
       parsedContent = content;
     }
 
-    // Generate avatars for each candidate using DALL-E
+    // Fetch avatars for each candidate from Unsplash
     if (Array.isArray(parsedContent)) {
-      console.log('Generating avatars for candidates...');
-      const avatarPromises = parsedContent.map(async (item) => {
+      console.log('Fetching avatars from Unsplash...');
+
+      // Search queries for variety
+      const queries = ['professional headshot', 'business portrait', 'corporate headshot'];
+
+      const avatarPromises = parsedContent.map(async (item, index) => {
         try {
           const candidate = item.candidate || item;
           const candidateName = candidate.full_name || candidate.name || 'Professional';
-          const title = candidate.current_position?.title || candidate.title || 'Professional';
 
-          console.log(`Generating avatar for ${candidateName}...`);
+          console.log(`Fetching avatar for ${candidateName}...`);
 
-          const prompt = `Professional corporate headshot photograph of a young business professional named ${candidateName}, working as a ${title}. Clean, minimalist background, contemporary professional clothing, friendly and confident expression, well-lit modern studio photography, LinkedIn profile style`;
+          // Rotate through different search queries for variety
+          const query = queries[index % queries.length];
 
-          const imageResponse = await openai.images.generate({
-            model: "dall-e-3",
-            prompt: prompt,
-            n: 1,
-            size: "1024x1024",
-            quality: "standard",
+          const unsplashUrl = `https://api.unsplash.com/photos/random?query=${encodeURIComponent(query)}&orientation=portrait&content_filter=high`;
+
+          const response = await fetch(unsplashUrl, {
+            headers: {
+              'Authorization': `Client-ID ${process.env.UNSPLASH_ACCESS_KEY || 'your-unsplash-access-key'}`
+            }
           });
 
-          const avatarUrl = imageResponse.data[0].url;
-          console.log(`Generated avatar for ${candidateName}: ${avatarUrl}`);
+          if (response.ok) {
+            const data = await response.json();
+            const avatarUrl = data.urls.regular; // Use 'regular' size (1080px)
+            console.log(`Fetched avatar for ${candidateName}: ${avatarUrl}`);
 
-          // Add avatar URL to candidate data
-          if (item.candidate) {
-            item.candidate.avatar_url = avatarUrl;
+            // Add avatar URL to candidate data
+            if (item.candidate) {
+              item.candidate.avatar_url = avatarUrl;
+            } else {
+              item.avatar_url = avatarUrl;
+            }
           } else {
-            item.avatar_url = avatarUrl;
+            console.error(`Failed to fetch avatar for ${candidateName}:`, response.statusText);
           }
         } catch (error) {
-          console.error(`Error generating avatar for candidate:`, error.message);
-          // Continue without avatar if generation fails
+          console.error(`Error fetching avatar for candidate:`, error.message);
+          // Continue without avatar if fetch fails
         }
       });
 
-      // Wait for all avatars to be generated
+      // Wait for all avatars to be fetched
       await Promise.all(avatarPromises);
-      console.log('All avatars generated successfully');
+      console.log('All avatars fetched successfully');
     }
 
     res.json({
