@@ -40,8 +40,8 @@ const DemoSetup: React.FC = () => {
 
     console.log('Demo setup saved:', demoData);
 
-    // Navigate to Onboarding page
-    navigate('/onboarding');
+    // Navigate to Onboarding page with name parameter
+    navigate(`/onboarding?name=${encodeURIComponent(userName.trim())}`);
 
     setIsLoading(false);
   };

@@ -9,6 +9,11 @@
   z-index: 100;
   background: white;
   border-bottom: 1px solid #EAECF0;
+  transition: width 0.3s ease-in-out;
+}
+
+body.chat-panel-open .app-header {
+  width: calc(100% - 408px);
 }
 
 .app-header.chat-variant {

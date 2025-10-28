@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import './RecipeLoader.css';
 
 interface LoadingCard {
@@ -12,6 +12,7 @@ interface LoadingCard {
 
 const RecipeLoader: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [cards, setCards] = useState<LoadingCard[]>([
     {
       id: 1,
@@ -96,7 +97,13 @@ const RecipeLoader: React.FC = () => {
   }, []);
 
   const handleContinue = () => {
-    navigate('/candidate-review');
+    // Preserve name parameter if it exists
+    const nameParam = searchParams.get('name');
+    if (nameParam) {
+      navigate(`/candidate-review?name=${encodeURIComponent(nameParam)}`);
+    } else {
+      navigate('/candidate-review');
+    }
   };
 
   const handleRestartDemo = () => {
@@ -108,6 +115,11 @@ const RecipeLoader: React.FC = () => {
 
   return (
     <div className="recipe-loader">
+      {/* Progress Bar */}
+      <div className="progress-bar">
+        <div className="progress-fill" style={{ width: '90%' }}></div>
+      </div>
+
       <div className="recipe-loader-container">
         {/* Header with Logo */}
         <div className="title-section">

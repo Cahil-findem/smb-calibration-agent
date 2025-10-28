@@ -6,6 +6,7 @@ interface HeaderProps {
   showCloseButton?: boolean;
   onCloseClick?: () => void;
   variant?: 'default' | 'chat';
+  isChatOpen?: boolean;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -13,10 +14,11 @@ const Header: React.FC<HeaderProps> = ({
   title = 'Search Calibration Agent',
   showCloseButton = false,
   onCloseClick,
-  variant = 'default'
+  variant = 'default',
+  isChatOpen = false
 }) => {
   return (
-    <header className={`app-header ${variant === 'chat' ? 'chat-variant' : ''}`}>
+    <header className={`app-header ${variant === 'chat' ? 'chat-variant' : ''} ${isChatOpen ? 'chat-open' : ''}`}>
       <div className="header-content">
         <div className="header-title">
           <div className="title-text">{title}</div>

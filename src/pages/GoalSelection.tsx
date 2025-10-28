@@ -1,13 +1,38 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import './GoalSelection.css';
 
 const GoalSelection: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [jobDescription, setJobDescription] = useState<string>('');
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [transitionDirection, setTransitionDirection] = useState<'forward' | 'backward'>('forward');
   const [isProcessing, setIsProcessing] = useState(false);
+
+  useEffect(() => {
+    // Check if name is in URL parameter and save to localStorage
+    const nameFromUrl = searchParams.get('name');
+    if (nameFromUrl) {
+      const storedData = localStorage.getItem('demoSetupData');
+      if (storedData) {
+        try {
+          const demoData = JSON.parse(storedData);
+          demoData.userName = nameFromUrl;
+          localStorage.setItem('demoSetupData', JSON.stringify(demoData));
+        } catch (error) {
+          console.error('Error updating userName in localStorage:', error);
+        }
+      } else {
+        // Create new entry if it doesn't exist
+        const demoData = {
+          userName: nameFromUrl,
+          timestamp: Date.now()
+        };
+        localStorage.setItem('demoSetupData', JSON.stringify(demoData));
+      }
+    }
+  }, [searchParams]);
 
   const exampleJobDescription = `What is Findem:
 
@@ -151,7 +176,13 @@ We believe that a diverse team builds better solutions. We're committed to creat
           setTransitionDirection('forward');
           setIsTransitioning(true);
           setTimeout(() => {
-            navigate('/screening-questions');
+            // Preserve name parameter if it exists
+            const nameParam = searchParams.get('name');
+            if (nameParam) {
+              navigate(`/screening-questions?name=${encodeURIComponent(nameParam)}`);
+            } else {
+              navigate('/screening-questions');
+            }
           }, 600);
         } else {
           console.error('Questions API Error:', questionsData.error);
@@ -170,7 +201,13 @@ We believe that a diverse team builds better solutions. We're committed to creat
     setTransitionDirection('backward');
     setIsTransitioning(true);
     setTimeout(() => {
-      navigate('/onboarding');
+      // Preserve name parameter if it exists
+      const nameParam = searchParams.get('name');
+      if (nameParam) {
+        navigate(`/onboarding?name=${encodeURIComponent(nameParam)}`);
+      } else {
+        navigate('/onboarding');
+      }
     }, 600);
   };
 

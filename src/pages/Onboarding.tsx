@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import './Onboarding.css';
 
 interface DemoSetupData {
@@ -9,26 +9,40 @@ interface DemoSetupData {
 
 const Onboarding: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [userName, setUserName] = useState('');
   const [currentStep, setCurrentStep] = useState(1);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [transitionDirection, setTransitionDirection] = useState<'forward' | 'backward'>('forward');
 
   useEffect(() => {
-    // Get user data from localStorage to personalize greeting
-    const storedData = localStorage.getItem('demoSetupData');
-    if (storedData) {
-      try {
-        const demoData: DemoSetupData = JSON.parse(storedData);
-        setUserName(demoData.userName || 'there');
-      } catch (error) {
-        console.error('Error parsing demo setup data:', error);
+    // First check if name is in URL parameter
+    const nameFromUrl = searchParams.get('name');
+
+    if (nameFromUrl) {
+      // Save to localStorage for use across the app
+      const demoData: DemoSetupData = {
+        userName: nameFromUrl,
+        timestamp: Date.now()
+      };
+      localStorage.setItem('demoSetupData', JSON.stringify(demoData));
+      setUserName(nameFromUrl);
+    } else {
+      // Fall back to localStorage
+      const storedData = localStorage.getItem('demoSetupData');
+      if (storedData) {
+        try {
+          const demoData: DemoSetupData = JSON.parse(storedData);
+          setUserName(demoData.userName || 'there');
+        } catch (error) {
+          console.error('Error parsing demo setup data:', error);
+          setUserName('there');
+        }
+      } else {
         setUserName('there');
       }
-    } else {
-      setUserName('there');
     }
-  }, []);
+  }, [searchParams]);
 
   const handleContinue = () => {
     if (currentStep === 1) {
@@ -41,7 +55,13 @@ const Onboarding: React.FC = () => {
       }, 600); // Wait for fade-out animation
     } else {
       // Go to GoalSelection page
-      navigate('/goal-selection');
+      // Preserve name parameter if it exists
+      const nameParam = searchParams.get('name');
+      if (nameParam) {
+        navigate(`/goal-selection?name=${encodeURIComponent(nameParam)}`);
+      } else {
+        navigate('/goal-selection');
+      }
     }
   };
 
@@ -85,7 +105,7 @@ const Onboarding: React.FC = () => {
     <div className="onboarding-container">
       {/* Progress Bar */}
       <div className="progress-bar">
-        <div className="progress-fill" style={{ width: currentStep === 1 ? '50%' : '100%' }}></div>
+        <div className="progress-fill" style={{ width: currentStep === 1 ? '20%' : '40%' }}></div>
       </div>
 
       {/* Main Content */}

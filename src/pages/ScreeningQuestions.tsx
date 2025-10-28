@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import './ScreeningQuestions.css';
 
 const ScreeningQuestions: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [questions, setQuestions] = useState<string[]>([
     'Do you have experience with React and TypeScript?',
     'Are you comfortable working remotely?',
@@ -13,6 +14,27 @@ const ScreeningQuestions: React.FC = () => {
   const [transitionDirection, setTransitionDirection] = useState<'forward' | 'backward'>('forward');
 
   useEffect(() => {
+    // Check if name is in URL parameter and save to localStorage
+    const nameFromUrl = searchParams.get('name');
+    if (nameFromUrl) {
+      const storedData = localStorage.getItem('demoSetupData');
+      if (storedData) {
+        try {
+          const demoData = JSON.parse(storedData);
+          demoData.userName = nameFromUrl;
+          localStorage.setItem('demoSetupData', JSON.stringify(demoData));
+        } catch (error) {
+          console.error('Error updating userName in localStorage:', error);
+        }
+      } else {
+        const demoData = {
+          userName: nameFromUrl,
+          timestamp: Date.now()
+        };
+        localStorage.setItem('demoSetupData', JSON.stringify(demoData));
+      }
+    }
+
     // Load generated screening questions from localStorage
     const storedData = localStorage.getItem('demoSetupData');
     if (storedData) {
@@ -25,7 +47,7 @@ const ScreeningQuestions: React.FC = () => {
         console.error('Error loading screening questions:', error);
       }
     }
-  }, []);
+  }, [searchParams]);
 
   const handleQuestionChange = (index: number, value: string) => {
     const updatedQuestions = [...questions];
@@ -52,7 +74,13 @@ const ScreeningQuestions: React.FC = () => {
       setTransitionDirection('forward');
       setIsTransitioning(true);
       setTimeout(() => {
-        navigate('/recipe-loader');
+        // Preserve name parameter if it exists
+        const nameParam = searchParams.get('name');
+        if (nameParam) {
+          navigate(`/recipe-loader?name=${encodeURIComponent(nameParam)}`);
+        } else {
+          navigate('/recipe-loader');
+        }
       }, 600);
     }
   };
@@ -61,7 +89,13 @@ const ScreeningQuestions: React.FC = () => {
     setTransitionDirection('backward');
     setIsTransitioning(true);
     setTimeout(() => {
-      navigate('/goal-selection');
+      // Preserve name parameter if it exists
+      const nameParam = searchParams.get('name');
+      if (nameParam) {
+        navigate(`/goal-selection?name=${encodeURIComponent(nameParam)}`);
+      } else {
+        navigate('/goal-selection');
+      }
     }, 600);
   };
 

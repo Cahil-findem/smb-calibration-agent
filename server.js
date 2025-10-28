@@ -165,6 +165,178 @@ app.post('/api/analyze-job-description', async (req, res) => {
   }
 });
 
+// Recruiter chat endpoint for candidate calibration
+app.post('/api/recruiter-chat', async (req, res) => {
+  try {
+    const { messages, candidates, shouldRegenerateCandidates = false, role_brief = '' } = req.body;
+
+    // System prompt for the recruiter persona
+    const systemPrompt = {
+      role: 'system',
+      content: `You are Sia, an experienced technical recruiter helping a hiring manager calibrate their candidate search. Your goal is to understand what they like and don't like about the candidate profiles shown to them.
+
+Key behaviors:
+- Be warm, professional, and conversational
+- Ask specific follow-up questions to understand their preferences
+- Focus on actionable feedback: seniority level, company backgrounds, skills, experience patterns
+- Help them articulate what "good" looks like for their role
+- Reference specific candidates when relevant (e.g., "I notice Sarah has 5 years at Google...")
+- Keep responses concise (2-3 sentences max)
+- Guide them toward specific, measurable criteria
+
+IMPORTANT: If the user just requested to regenerate candidates, acknowledge that new candidates have been generated based on their feedback and ask if they'd like to make any additional tweaks or adjustments.
+
+Current candidates being reviewed:
+${candidates ? JSON.stringify(candidates, null, 2) : 'No candidates provided'}
+
+Your job is to help refine the search by understanding their feedback.`
+    };
+
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o',
+      messages: [systemPrompt, ...messages],
+      temperature: 0.7,
+      max_tokens: 200,
+    });
+
+    // If we should regenerate candidates, summarize feedback and call the prompt API
+    let newCandidates = null;
+    if (shouldRegenerateCandidates && messages.length > 0) {
+      console.log('Starting candidate regeneration process...');
+
+      // Summarize the conversation into feedback points
+      const summaryPrompt = {
+        role: 'system',
+        content: `Summarize this conversation into a concise list of candidate preferences and feedback. Focus on:
+- Seniority level preferences
+- Company background preferences
+- Skills and experience requirements
+- Any specific feedback about candidates
+
+Format as a bulleted list of clear, actionable points.`
+      };
+
+      const summary = await openai.chat.completions.create({
+        model: 'gpt-4o',
+        messages: [summaryPrompt, ...messages],
+        temperature: 0.3,
+        max_tokens: 300,
+      });
+
+      const feedbackSummary = summary.choices[0].message.content;
+      console.log('Feedback summary:', feedbackSummary);
+
+      // Get existing appended_feedback and append new feedback
+      const existingFeedback = req.body.appended_feedback || '';
+      const updatedFeedback = existingFeedback
+        ? `${existingFeedback}\n\nAdditional feedback:\n${feedbackSummary}`
+        : feedbackSummary;
+
+      console.log('=== FULL APPENDED FEEDBACK BEING SENT ===');
+      console.log(updatedFeedback);
+      console.log('=========================================');
+      console.log('Calling OpenAI Responses API with appended feedback...');
+
+      // Call OpenAI Responses API to regenerate candidates
+      const response = await openai.responses.create({
+        prompt: {
+          id: 'pmpt_68fc0cf5731c8190ad4b3eed58fa8ba500f7b712f3a134f9',
+          version: '2',
+          variables: {
+            role_brief,
+            appended_feedback: updatedFeedback,
+          },
+        },
+      });
+
+      console.log('Received new candidates from OpenAI');
+
+      // Extract content from response
+      let content = null;
+      if (response.output && Array.isArray(response.output)) {
+        const messageOutput = response.output.find(item => item.type === 'message');
+        if (messageOutput && messageOutput.content && messageOutput.content[0]) {
+          content = messageOutput.content[0].text;
+        }
+      }
+
+      // Parse the JSON string
+      let parsedCandidates = null;
+      if (typeof content === 'string') {
+        try {
+          parsedCandidates = JSON.parse(content);
+          console.log('Successfully parsed new candidate data');
+        } catch (error) {
+          console.error('Failed to parse JSON:', error);
+        }
+      }
+
+      // Assign new avatars from Unsplash with random selection
+      if (Array.isArray(parsedCandidates)) {
+        console.log('Assigning new avatars from Unsplash...');
+
+        // Unsplash avatar pool (20 professional headshots)
+        const AVATAR_POOL = [
+          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=faces',
+          'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop&crop=faces',
+          'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=faces',
+          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop&crop=faces',
+          'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop&crop=faces',
+          'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=400&fit=crop&crop=faces',
+          'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop&crop=faces',
+          'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&h=400&fit=crop&crop=faces',
+          'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?w=400&h=400&fit=crop&crop=faces',
+          'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=faces',
+          'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=faces',
+          'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=400&h=400&fit=crop&crop=faces',
+          'https://images.unsplash.com/photo-1506277886164-e25aa3f4ef7f?w=400&h=400&fit=crop&crop=faces',
+          'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=400&h=400&fit=crop&crop=faces',
+          'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop&crop=faces',
+          'https://images.unsplash.com/photo-1557862921-37829c790f19?w=400&h=400&fit=crop&crop=faces',
+          'https://images.unsplash.com/photo-1463453091185-61582044d556?w=400&h=400&fit=crop&crop=faces',
+          'https://images.unsplash.com/photo-1504257432389-52343af06ae3?w=400&h=400&fit=crop&crop=faces',
+          'https://images.unsplash.com/photo-1552058544-f2b08422138a?w=400&h=400&fit=crop&crop=faces',
+          'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=400&h=400&fit=crop&crop=faces',
+        ];
+
+        // Shuffle array for random selection
+        const shuffledAvatars = [...AVATAR_POOL].sort(() => Math.random() - 0.5);
+
+        parsedCandidates.forEach((item, index) => {
+          const avatarUrl = shuffledAvatars[index % shuffledAvatars.length];
+
+          // Add avatar URL to candidate data
+          if (item.candidate) {
+            item.candidate.avatar_url = avatarUrl;
+          } else {
+            item.avatar_url = avatarUrl;
+          }
+        });
+
+        console.log('New avatars assigned successfully');
+      }
+
+      newCandidates = {
+        candidates: parsedCandidates,
+        appended_feedback: updatedFeedback,
+      };
+    }
+
+    res.json({
+      success: true,
+      response: completion.choices[0].message.content,
+      usage: completion.usage,
+      newCandidates,
+    });
+  } catch (error) {
+    console.error('Recruiter Chat API Error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
 // Generate screening questions based on job description
 app.post('/api/generate-screening-questions', async (req, res) => {
   try {

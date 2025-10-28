@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import './CandidateReview.css';
+import ChatPane from '../components/ChatPane';
 
 interface Candidate {
   id: number;
@@ -84,8 +85,71 @@ const defaultCandidates: Candidate[] = [
 
 const CandidateReview: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [candidates, setCandidates] = useState<Candidate[]>(defaultCandidates);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [logoOpacity, setLogoOpacity] = useState(1);
+  const [visibleMessages, setVisibleMessages] = useState<number[]>([]);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [appendedFeedback, setAppendedFeedback] = useState('');
+  const [isLoadingCandidates, setIsLoadingCandidates] = useState(false);
+  const [userName, setUserName] = useState('there');
+
+  // Get userName from URL parameter or localStorage
+  useEffect(() => {
+    const nameFromUrl = searchParams.get('name');
+    if (nameFromUrl) {
+      setUserName(nameFromUrl);
+      // Save to localStorage
+      const storedData = localStorage.getItem('demoSetupData');
+      if (storedData) {
+        try {
+          const demoData = JSON.parse(storedData);
+          demoData.userName = nameFromUrl;
+          localStorage.setItem('demoSetupData', JSON.stringify(demoData));
+        } catch (error) {
+          console.error('Error updating userName in localStorage:', error);
+        }
+      } else {
+        const demoData = {
+          userName: nameFromUrl,
+          timestamp: Date.now()
+        };
+        localStorage.setItem('demoSetupData', JSON.stringify(demoData));
+      }
+    } else {
+      // Fall back to localStorage
+      const storedData = localStorage.getItem('demoSetupData');
+      if (storedData) {
+        try {
+          const demoData = JSON.parse(storedData);
+          setUserName(demoData.userName || 'there');
+        } catch (error) {
+          console.error('Error parsing demo setup data:', error);
+        }
+      }
+    }
+  }, [searchParams]);
+
+  // Add/remove chat-open class to body when chat state changes
+  useEffect(() => {
+    if (isChatOpen) {
+      document.body.classList.add('chat-panel-open');
+    } else {
+      document.body.classList.remove('chat-panel-open');
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.classList.remove('chat-panel-open');
+    };
+  }, [isChatOpen]);
+
+  // Messages to display in the AI affordance - using dynamic userName
+  const affordanceMessages = [
+    `Hey ${userName} 👋`,
+    "Like these candidates?"
+  ];
 
   useEffect(() => {
     // Load AI-generated candidates from localStorage
@@ -188,6 +252,31 @@ const CandidateReview: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    // Fade out logo after 4 seconds
+    const timer = setTimeout(() => {
+      setLogoOpacity(0);
+    }, 4000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    // Show messages one by one with 4-second delay
+    const timers: NodeJS.Timeout[] = [];
+
+    affordanceMessages.forEach((_, index) => {
+      const timer = setTimeout(() => {
+        setVisibleMessages(prev => [...prev, index]);
+      }, index * 4000);
+      timers.push(timer);
+    });
+
+    return () => {
+      timers.forEach(timer => clearTimeout(timer));
+    };
+  }, []);
+
   const handleContinue = () => {
     navigate('/next-page'); // Update to next page in flow
   };
@@ -196,8 +285,64 @@ const CandidateReview: React.FC = () => {
     navigate('/recipe-loader');
   };
 
+  const handleCandidatesUpdate = (newCandidatesData: any[], updatedFeedback: string, isLoading: boolean = false) => {
+    // Set loading state
+    if (isLoading) {
+      setIsLoadingCandidates(true);
+      return;
+    }
+
+    console.log('Received new candidates from chat:', newCandidatesData);
+
+    // Map the new candidates to our format (similar to initial load)
+    if (Array.isArray(newCandidatesData) && newCandidatesData.length > 0) {
+      const mappedCandidates = newCandidatesData.slice(0, 3).map((item: any, index: number) => {
+        const candidate = item.candidate || item;
+        const match = item.match || {};
+        const facetPills = match.facet_pills || [];
+
+        const rolePill = facetPills.find((p: any) => p.label === 'Role');
+        const locationPill = facetPills.find((p: any) => p.label === 'Location');
+        const experiencePill = facetPills.find((p: any) => p.label === 'Experience');
+        const skillsPill = facetPills.find((p: any) => p.label === 'Skills');
+
+        return {
+          id: candidate.id || index + 1,
+          name: candidate.full_name || candidate.name || 'Unknown Candidate',
+          title: candidate.current_position?.title || candidate.title || 'Professional',
+          company: candidate.current_position?.company || candidate.company || 'Tech Company',
+          companyLogo: '🏢',
+          tenure: candidate.current_position?.tenure_years
+            ? `${candidate.current_position.tenure_years} year tenure`
+            : '3+ years',
+          avatar: candidate.avatar_url || (index === 0 ? '👨‍💼' : index === 1 ? '👩‍💼' : '👨‍💻'),
+          isTopMatch: match.top_match === true || index === 0,
+          matchCriteria: {
+            role: rolePill ? rolePill.state === 'match' : true,
+            location: locationPill ? locationPill.state === 'match' : true,
+            experience: experiencePill ? experiencePill.state === 'match' : true,
+            skills: skillsPill ? skillsPill.state === 'match' : true
+          },
+          whyMatch: match.why_rich?.text || match.why_summary || 'Strong candidate based on qualifications and experience.',
+          whyRich: match.why_rich
+        };
+      });
+
+      setCandidates(mappedCandidates);
+      setAppendedFeedback(updatedFeedback);
+      setIsLoadingCandidates(false);
+      console.log('Updated candidates with new data:', mappedCandidates);
+    }
+  };
+
   return (
-    <div className="candidate-review-container">
+    <div className="candidate-review-wrapper">
+      <div className={`candidate-review-container ${isChatOpen ? 'chat-open' : ''}`}>
+        {/* Progress Bar */}
+        <div className="progress-bar">
+          <div className="progress-fill" style={{ width: '95%' }}></div>
+        </div>
+
       {/* Sticky Header Container */}
       <div className={`sticky-header ${isScrolled ? 'scrolled' : ''}`}>
         {/* Header */}
@@ -207,13 +352,11 @@ const CandidateReview: React.FC = () => {
               className="x-logo"
               src="/AI%20Loader.gif"
               alt="AI Logo"
+              style={{ opacity: logoOpacity, transition: 'opacity 0.5s ease-in-out' }}
             />
-            <h1 className="review-title">Do these candidates feel like a strong fit?</h1>
+            <h1 className="review-title">Your target candidates</h1>
           </div>
           <div className="header-buttons">
-            <button className="header-btn-secondary" onClick={handleBack}>
-              Request Changes
-            </button>
             <button className="header-btn-primary" onClick={handleContinue}>
               Launch Search
             </button>
@@ -227,7 +370,7 @@ const CandidateReview: React.FC = () => {
       {/* Candidates List */}
       <div className="candidates-list">
         {candidates.map((candidate) => (
-          <div key={candidate.id} className="candidate-row">
+          <div key={candidate.id} className={`candidate-row ${isLoadingCandidates ? 'loading' : ''}`}>
             <div className="candidate-main-info">
               <div className="candidate-details">
                 <div className="candidate-avatar">
@@ -304,6 +447,42 @@ const CandidateReview: React.FC = () => {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* AI Affordance - Fixed Bottom Right */}
+      <div className="ai-affordance">
+        {/* Message Bubbles - Hidden when chat is open */}
+        {!isChatOpen && (
+          <div className="ai-messages">
+            {affordanceMessages.map((message, index) => (
+              visibleMessages.includes(index) && (
+                <div key={index} className="ai-message-bubble">
+                  {message}
+                </div>
+              )
+            ))}
+          </div>
+        )}
+
+        {/* AI Icon */}
+        <div className="ai-icon-container" onClick={() => setIsChatOpen(true)}>
+          <div className="ai-icon-bg">
+            <img
+              src="/ai-logo.svg"
+              alt="AI Assistant"
+              className="ai-icon-svg"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Chat Pane */}
+      <ChatPane
+        isOpen={isChatOpen}
+        onClose={() => setIsChatOpen(false)}
+        candidates={candidates}
+        onCandidatesUpdate={handleCandidatesUpdate}
+      />
       </div>
     </div>
   );
