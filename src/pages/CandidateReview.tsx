@@ -91,7 +91,7 @@ const CandidateReview: React.FC = () => {
   const [logoOpacity, setLogoOpacity] = useState(1);
   const [visibleMessages, setVisibleMessages] = useState<number[]>([]);
   const [isChatOpen, setIsChatOpen] = useState(false);
-  const [appendedFeedback, setAppendedFeedback] = useState('');
+  const [_appendedFeedback, setAppendedFeedback] = useState('');
   const [isLoadingCandidates, setIsLoadingCandidates] = useState(false);
   const [userName, setUserName] = useState('there');
 
@@ -279,10 +279,6 @@ const CandidateReview: React.FC = () => {
 
   const handleContinue = () => {
     navigate('/next-page'); // Update to next page in flow
-  };
-
-  const handleBack = () => {
-    navigate('/recipe-loader');
   };
 
   const handleCandidatesUpdate = (newCandidatesData: any[], updatedFeedback: string, isLoading: boolean = false) => {

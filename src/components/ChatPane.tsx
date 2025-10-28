@@ -97,7 +97,7 @@ const ChatPane: React.FC<ChatPaneProps> = ({ isOpen, onClose, candidates = [], o
 
       if (data.success) {
         // Only add user message to display (not the system message)
-        const displayMessages = [...messages, { role: 'user' as const, content: userMessage }, { role: 'assistant', content: data.response }];
+        const displayMessages = [...messages, { role: 'user' as const, content: userMessage }, { role: 'assistant' as const, content: data.response }];
         setMessages(displayMessages);
 
         // If new candidates were generated, update them
@@ -121,7 +121,7 @@ const ChatPane: React.FC<ChatPaneProps> = ({ isOpen, onClose, candidates = [], o
       } else {
         console.error('Chat API error:', data.error);
         const displayMessages = [...messages, { role: 'user' as const, content: userMessage }, {
-          role: 'assistant',
+          role: 'assistant' as const,
           content: 'Sorry, I encountered an error. Please try again.'
         }];
         setMessages(displayMessages);
@@ -129,7 +129,7 @@ const ChatPane: React.FC<ChatPaneProps> = ({ isOpen, onClose, candidates = [], o
     } catch (error) {
       console.error('Failed to send message:', error);
       const displayMessages = [...messages, { role: 'user' as const, content: userMessage }, {
-        role: 'assistant',
+        role: 'assistant' as const,
         content: 'Sorry, I\'m having trouble connecting. Please try again.'
       }];
       setMessages(displayMessages);
