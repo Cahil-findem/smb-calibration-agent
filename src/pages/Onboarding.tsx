@@ -81,12 +81,12 @@ const Onboarding: React.FC = () => {
     if (currentStep === 1) {
       return {
         greeting: `Hey ${userName} 👋`,
-        message: "I'm Sia, I'll be taking care of your search from end to end!"
+        message: "I'm Sia, I'll be looking after your search every step of the way."
       };
     } else {
       return {
         greeting: "Think of me as part of your team.",
-        message: "I'll be reaching out to candidates around the clock and will bring you three interview-ready matches within two weeks."
+        message: "I'll bring you three interview-ready matches within two weeks."
       };
     }
   };
