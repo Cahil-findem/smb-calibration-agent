@@ -350,12 +350,10 @@ const CandidateReview: React.FC = () => {
               alt="AI Logo"
               style={{ opacity: logoOpacity, transition: 'opacity 0.5s ease-in-out' }}
             />
-            <h1 className="review-title">Your target candidates</h1>
-          </div>
-          <div className="header-buttons">
-            <button className="header-btn-primary" onClick={handleContinue}>
-              Launch Search
-            </button>
+            <div>
+              <h1 className="review-title">Your target candidates</h1>
+              <p className="review-subtitle">Here are 3 ideal candidates based on your requirements. We can refine them together before launching your search.</p>
+            </div>
           </div>
         </div>
 
@@ -443,31 +441,24 @@ const CandidateReview: React.FC = () => {
             </div>
           </div>
         ))}
-      </div>
 
-      {/* AI Affordance - Fixed Bottom Right */}
-      <div className="ai-affordance">
-        {/* Message Bubbles - Hidden when chat is open */}
-        {!isChatOpen && (
-          <div className="ai-messages">
-            {affordanceMessages.map((message, index) => (
-              visibleMessages.includes(index) && (
-                <div key={index} className="ai-message-bubble">
-                  {message}
-                </div>
-              )
-            ))}
-          </div>
-        )}
-
-        {/* AI Icon */}
-        <div className="ai-icon-container" onClick={() => setIsChatOpen(true)}>
-          <div className="ai-icon-bg">
-            <img
-              src="/ai-logo.svg"
-              alt="AI Assistant"
-              className="ai-icon-svg"
-            />
+        {/* Action Buttons */}
+        <div className={`bottom-actions ${isChatOpen ? 'chat-open' : ''}`}>
+          <button className="refine-chip" onClick={() => setIsChatOpen(!isChatOpen)}>
+            {isChatOpen ? (
+              <span className="material-icons-round refine-chip-icon-close">close</span>
+            ) : (
+              <span className="material-icons-round refine-chip-icon">auto_awesome</span>
+            )}
+            <span>Refine candidates</span>
+          </button>
+          <div className="bottom-actions-right">
+            <button className="header-btn-secondary" onClick={() => window.history.back()}>
+              Back
+            </button>
+            <button className="header-btn-primary" onClick={handleContinue}>
+              Activate Sourcing
+            </button>
           </div>
         </div>
       </div>

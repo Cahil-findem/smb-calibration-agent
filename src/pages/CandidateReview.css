@@ -74,6 +74,16 @@
   text-align: left;
 }
 
+.review-subtitle {
+  color: #465366;
+  font-size: 16px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  line-height: 1.5;
+  margin: 4px 0 0 0;
+  text-align: left;
+}
+
 /* Header Buttons */
 .header-buttons {
   display: flex;
@@ -124,6 +134,65 @@
   transform: scale(0.98);
 }
 
+.header-btn-tertiary {
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  color: #465366;
+  font-size: 14px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  line-height: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.header-btn-tertiary:hover {
+  background: #F9FAFB;
+  color: #101828;
+}
+
+.header-btn-tertiary:active {
+  background: #EAECF0;
+}
+
+.refine-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: white;
+  border: 1px solid #DCDFEA;
+  border-radius: 24px;
+  color: #101828;
+  font-size: 14px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.refine-chip:hover {
+  background: #F9FAFB;
+  border-color: #98A2B3;
+}
+
+.refine-chip:active {
+  background: #F3F4F6;
+  transform: scale(0.98);
+}
+
+.refine-chip-icon {
+  color: #735BF3;
+  font-size: 20px;
+}
+
+.refine-chip-icon-close {
+  color: #465366;
+  font-size: 20px;
+}
+
 /* Header Divider */
 .header-divider {
   width: 100%;
@@ -139,26 +208,59 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  margin-bottom: 32px;
+  margin-bottom: 52px;
+}
+
+/* Bottom Actions */
+.bottom-actions {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 900px;
+  width: calc(100% - 48px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  z-index: 50;
+  transition: transform 0.3s ease-in-out;
+}
+
+.bottom-actions.chat-open {
+  transform: translateX(calc(-50% - 204px));
+}
+
+.bottom-actions-right {
+  display: flex;
+  gap: 12px;
 }
 
 /* Candidate Row */
 .candidate-row {
   background: white;
-  border: 1px solid #DCDFEA;
-  border-radius: 16px;
-  padding: 28px 24px;
+  padding: 28px 0;
   display: flex;
   flex-direction: column;
   gap: 10px;
   position: relative;
   overflow: hidden;
+  border-bottom: 1px solid #DCDFEA;
+}
+
+.candidate-row:last-child {
+  border-bottom: none;
 }
 
 /* Shimmer Effect */
 .candidate-row.loading {
   pointer-events: none;
-  border-color: rgba(220, 223, 234, 0.5);
 }
 
 .candidate-row.loading::before {
@@ -248,6 +350,7 @@
   font-weight: 500;
   line-height: 24px;
   margin: 0;
+  white-space: nowrap;
 }
 
 .candidate-current-job {
@@ -259,10 +362,12 @@
   font-weight: 400;
   line-height: 20px;
   color: #465366;
+  white-space: nowrap;
 }
 
 .job-title {
   color: #465366;
+  white-space: nowrap;
 }
 
 .job-at {
@@ -289,10 +394,12 @@
 
 .company-name {
   color: #465366;
+  white-space: nowrap;
 }
 
 .company-tenure {
   color: #465366;
+  white-space: nowrap;
 }
 
 /* Match Chips */

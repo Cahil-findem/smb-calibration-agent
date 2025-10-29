@@ -203,33 +203,41 @@ Your job is to help refine the search by understanding their feedback.`
     if (shouldRegenerateCandidates && messages.length > 0) {
       console.log('Starting candidate regeneration process...');
 
-      // Summarize the conversation into feedback points
-      const summaryPrompt = {
-        role: 'system',
-        content: `Summarize this conversation into a concise list of candidate preferences and feedback. Focus on:
-- Seniority level preferences
-- Company background preferences
-- Skills and experience requirements
-- Any specific feedback about candidates
+      // Get existing feedback context
+      const existingFeedback = req.body.appended_feedback || '';
 
-Format as a bulleted list of clear, actionable points.`
+      // Consolidate all feedback into one coherent set
+      const consolidationPrompt = {
+        role: 'system',
+        content: `You are analyzing candidate feedback to create a comprehensive search criteria.
+
+Current candidates being reviewed:
+${JSON.stringify(candidates, null, 2)}
+
+${existingFeedback ? `Previous feedback from earlier rounds:\n${existingFeedback}\n\n` : ''}
+
+Based on the conversation and current candidates, create a CONSOLIDATED list of requirements. Be very specific and directive:
+
+1. MUST HAVE: Non-negotiable requirements (extract from user feedback)
+2. MUST NOT HAVE: Explicit rejections and things to avoid (reference specific candidates as negative examples, e.g., "NOT like Sarah Chen who has...")
+3. PREFERRED: Nice-to-have attributes
+4. INTENSITY: Is this a major shift in direction or minor refinement?
+
+Use specific examples from the current candidates to illustrate what NOT to look for.
+Be direct and actionable. If the user said candidates are "too senior" or "lack startup experience", explicitly state this with candidate names as examples.
+
+Format as a clear, consolidated list that REPLACES all previous feedback.`
       };
 
-      const summary = await openai.chat.completions.create({
+      const consolidation = await openai.chat.completions.create({
         model: 'gpt-4o',
-        messages: [summaryPrompt, ...messages],
-        temperature: 0.3,
-        max_tokens: 300,
+        messages: [consolidationPrompt, ...messages],
+        temperature: 0.5,
+        max_tokens: 500,
       });
 
-      const feedbackSummary = summary.choices[0].message.content;
-      console.log('Feedback summary:', feedbackSummary);
-
-      // Get existing appended_feedback and append new feedback
-      const existingFeedback = req.body.appended_feedback || '';
-      const updatedFeedback = existingFeedback
-        ? `${existingFeedback}\n\nAdditional feedback:\n${feedbackSummary}`
-        : feedbackSummary;
+      const updatedFeedback = consolidation.choices[0].message.content;
+      console.log('Consolidated feedback:', updatedFeedback);
 
       console.log('=== FULL APPENDED FEEDBACK BEING SENT ===');
       console.log(updatedFeedback);

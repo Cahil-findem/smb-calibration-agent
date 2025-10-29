@@ -23,6 +23,7 @@ const ChatPane: React.FC<ChatPaneProps> = ({ isOpen, onClose, candidates = [], o
   const [previousFeedback, setPreviousFeedback] = useState('');
   const [isRegenerating, setIsRegenerating] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const suggestions = [
     { icon: 'trending_up', text: 'They\'re too senior for what I need' },
@@ -34,6 +35,14 @@ const ChatPane: React.FC<ChatPaneProps> = ({ isOpen, onClose, candidates = [], o
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
+
+  // Auto-grow textarea
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  }, [message]);
 
   const sendMessage = async (userMessage: string, shouldRegenerate = false) => {
     if (!userMessage.trim() || isLoading) return;
@@ -187,7 +196,7 @@ const ChatPane: React.FC<ChatPaneProps> = ({ isOpen, onClose, candidates = [], o
           {messages.length > 0 && (
             <span className="material-icons-round">auto_awesome</span>
           )}
-          <h2>Chat with Sia</h2>
+          <h2>Candidate Calibration</h2>
         </div>
         <div className="chat-pane-actions">
           <button className="icon-btn" onClick={handleReset} aria-label="Reset conversation">
@@ -259,7 +268,7 @@ const ChatPane: React.FC<ChatPaneProps> = ({ isOpen, onClose, candidates = [], o
                     src="/AI Loader.gif"
                     alt="Loading animation"
                   />
-                  <span>{isRegenerating ? 'Generating candidates...' : 'Thinking...'}</span>
+                  <span>{isRegenerating ? 'Regenerating candidates...' : 'Thinking...'}</span>
                 </div>
               )}
               <div ref={messagesEndRef} />
@@ -291,18 +300,25 @@ const ChatPane: React.FC<ChatPaneProps> = ({ isOpen, onClose, candidates = [], o
                 }}
                 disabled={isLoading}
               >
-                <span>Regenerate Candidates</span>
+                <span>Regenerate List</span>
               </button>
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="chat-pane-input-form">
-            <input
-              type="text"
+            <textarea
+              ref={textareaRef}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Ask, refine, or request anything..."
               className="chat-pane-input"
+              rows={1}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSubmit(e);
+                }
+              }}
             />
             <div className="chat-pane-input-actions">
               <button type="button" className="input-action-btn" aria-label="Voice input">
