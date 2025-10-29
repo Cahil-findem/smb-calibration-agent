@@ -66,9 +66,20 @@
   display: flex;
 }
 
-.logo {
+/* Check Icon Wrapper */
+.check-icon-wrapper {
   width: 40px;
   height: 40px;
+  background: #E0FFE9;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.check-icon {
+  color: #207C39;
+  font-size: 24px;
 }
 
 .greeting-section {

@@ -11,11 +11,9 @@ const Success: React.FC = () => {
       {/* Main Content */}
       <div className="success-content">
         <div className="content-inner">
-          <img
-            className="logo animate-fade-up"
-            src="/AI Loader.gif"
-            alt="Loading animation"
-          />
+          <div className="check-icon-wrapper animate-fade-up">
+            <span className="material-icons-round check-icon">check</span>
+          </div>
 
           <div className="greeting-section animate-fade-up animate-delay-1">
             <div className="greeting-header">
