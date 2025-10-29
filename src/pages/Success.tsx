@@ -20,7 +20,7 @@ const Success: React.FC = () => {
           <div className="greeting-section animate-fade-up animate-delay-1">
             <div className="greeting-header">
               <div className="greeting-title">
-                Sourcing is active.
+                Sourcing activated.
               </div>
             </div>
             <div className="greeting-body">
