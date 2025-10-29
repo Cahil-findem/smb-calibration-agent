@@ -217,7 +217,7 @@ const CandidateReview: React.FC = () => {
   }, []);
 
   const handleContinue = () => {
-    navigate('/next-page'); // Update to next page in flow
+    navigate('/success');
   };
 
   const handleCandidatesUpdate = (newCandidatesData: any[], updatedFeedback: string, isLoading: boolean = false) => {

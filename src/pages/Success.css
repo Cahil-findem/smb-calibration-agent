@@ -1,0 +1,144 @@
+.success-container {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  background: white;
+}
+
+/* Fade up animation */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animation classes */
+.animate-fade-up {
+  animation: fadeUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.animate-delay-1 {
+  animation-delay: 0.1s;
+}
+
+/* Progress Bar */
+.progress-bar {
+  width: 100vw;
+  height: 4px;
+  background: #f1f5f9;
+  position: fixed;
+  top: 56px;
+  left: 0;
+  z-index: 100;
+}
+
+.progress-fill {
+  height: 100%;
+  background: rgba(69, 153, 250, 0.4);
+  transition: width 0.3s ease;
+}
+
+/* Main Content */
+.success-content {
+  width: 100%;
+  height: 100%;
+  padding-bottom: 120px;
+  overflow: hidden;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  display: flex;
+}
+
+.content-inner {
+  max-width: 666px;
+  width: 100%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 20px;
+  display: flex;
+}
+
+.logo {
+  width: 40px;
+  height: 40px;
+}
+
+.greeting-section {
+  align-self: stretch;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  display: flex;
+}
+
+.greeting-header {
+  align-self: stretch;
+  overflow: hidden;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+  display: inline-flex;
+}
+
+.greeting-title {
+  color: #101828;
+  font-size: 28px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
+  line-height: 40.32px;
+  word-wrap: break-word;
+  text-align: left;
+}
+
+.greeting-body {
+  align-self: stretch;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  display: flex;
+}
+
+.welcome-message-container {
+  align-self: stretch;
+  overflow: hidden;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+  display: inline-flex;
+}
+
+.welcome-message {
+  flex: 1 1 0;
+  color: #465366;
+  font-size: 28px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  line-height: 40.32px;
+  word-wrap: break-word;
+  text-align: left;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .content-inner {
+    padding: 0 40px;
+  }
+
+  .success-content {
+    padding-bottom: 60px;
+  }
+
+  .greeting-title,
+  .welcome-message {
+    font-size: 24px;
+    line-height: 32px;
+  }
+}
