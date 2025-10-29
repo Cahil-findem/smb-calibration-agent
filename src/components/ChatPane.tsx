@@ -114,6 +114,11 @@ const ChatPane: React.FC<ChatPaneProps> = ({ isOpen, onClose, candidates = [], o
 
       const data = await response.json();
 
+      console.log('=== API RESPONSE RECEIVED ===');
+      console.log('Full response data:', data);
+      console.log('Has newCandidates?', !!data.newCandidates);
+      console.log('============================');
+
       if (data.success) {
         // Only add user message to display (not the system message)
         const displayMessages = [...messages, { role: 'user' as const, content: userMessage }, { role: 'assistant' as const, content: data.response }];
