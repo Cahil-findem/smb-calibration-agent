@@ -85,7 +85,12 @@ const ChatPane: React.FC<ChatPaneProps> = ({ isOpen, onClose, candidates = [], o
         }
       }
 
-      const response = await fetch('http://localhost:3004/api/recruiter-chat', {
+      // Use Vercel API endpoint in production, localhost in development
+      const apiUrl = import.meta.env.PROD
+        ? '/api/recruiter-chat'
+        : 'http://localhost:3004/api/recruiter-chat';
+
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
