@@ -144,12 +144,6 @@ const CandidateReview: React.FC = () => {
     };
   }, [isChatOpen]);
 
-  // Messages to display in the AI affordance - using dynamic userName
-  const affordanceMessages = [
-    `Hey ${userName} 👋`,
-    "Like these candidates?"
-  ];
-
   useEffect(() => {
     // Load AI-generated candidates from localStorage
     const storedData = localStorage.getItem('demoSetupData');
@@ -258,22 +252,6 @@ const CandidateReview: React.FC = () => {
     }, 4000);
 
     return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    // Show messages one by one with 4-second delay
-    const timers: NodeJS.Timeout[] = [];
-
-    affordanceMessages.forEach((_, index) => {
-      const timer = setTimeout(() => {
-        setVisibleMessages(prev => [...prev, index]);
-      }, index * 4000);
-      timers.push(timer);
-    });
-
-    return () => {
-      timers.forEach(timer => clearTimeout(timer));
-    };
   }, []);
 
   const handleContinue = () => {
