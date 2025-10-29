@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import './CandidateReview.css';
 import ChatPane from '../components/ChatPane';
 
@@ -85,7 +85,6 @@ const defaultCandidates: Candidate[] = [
 
 const CandidateReview: React.FC = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const [candidates, setCandidates] = useState<Candidate[]>(defaultCandidates);
   const [isScrolled, setIsScrolled] = useState(false);
   const [logoOpacity, setLogoOpacity] = useState(1);
