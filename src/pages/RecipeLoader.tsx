@@ -131,7 +131,7 @@ const RecipeLoader: React.FC = () => {
               style={{ opacity: isComplete ? 0 : 1, transition: 'opacity 0.3s ease' }}
             />
             <h1 className="page-title">
-              {isComplete ? 'All done, hit continue when you are ready' : 'Great - hang tight while I understand your requirements'}
+              {isComplete ? 'All done, hit continue when you are ready' : 'Hang tight while I process your requirements'}
             </h1>
           </div>
         </div>
