@@ -26,7 +26,7 @@ const Success: React.FC = () => {
             <div className="greeting-body">
               <div className="welcome-message-container">
                 <div className="welcome-message">
-                  Keep an eye on your inbox for candidates that match
+                  Keep an eye on your inbox for candidates that are ready to interview
                 </div>
               </div>
             </div>
