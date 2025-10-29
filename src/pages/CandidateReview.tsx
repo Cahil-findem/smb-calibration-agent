@@ -92,43 +92,6 @@ const CandidateReview: React.FC = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [_appendedFeedback, setAppendedFeedback] = useState('');
   const [isLoadingCandidates, setIsLoadingCandidates] = useState(false);
-  const [userName, setUserName] = useState('there');
-
-  // Get userName from URL parameter or localStorage
-  useEffect(() => {
-    const nameFromUrl = searchParams.get('name');
-    if (nameFromUrl) {
-      setUserName(nameFromUrl);
-      // Save to localStorage
-      const storedData = localStorage.getItem('demoSetupData');
-      if (storedData) {
-        try {
-          const demoData = JSON.parse(storedData);
-          demoData.userName = nameFromUrl;
-          localStorage.setItem('demoSetupData', JSON.stringify(demoData));
-        } catch (error) {
-          console.error('Error updating userName in localStorage:', error);
-        }
-      } else {
-        const demoData = {
-          userName: nameFromUrl,
-          timestamp: Date.now()
-        };
-        localStorage.setItem('demoSetupData', JSON.stringify(demoData));
-      }
-    } else {
-      // Fall back to localStorage
-      const storedData = localStorage.getItem('demoSetupData');
-      if (storedData) {
-        try {
-          const demoData = JSON.parse(storedData);
-          setUserName(demoData.userName || 'there');
-        } catch (error) {
-          console.error('Error parsing demo setup data:', error);
-        }
-      }
-    }
-  }, [searchParams]);
 
   // Add/remove chat-open class to body when chat state changes
   useEffect(() => {
