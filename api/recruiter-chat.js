@@ -24,7 +24,12 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { messages, candidates, shouldRegenerateCandidates = false, role_brief = '' } = req.body;
+    const { messages, candidates, shouldRegenerateCandidates = false, role_brief = '', appended_feedback = '' } = req.body;
+
+    console.log('=== INCOMING REQUEST ===');
+    console.log('shouldRegenerateCandidates:', shouldRegenerateCandidates);
+    console.log('appended_feedback from request:', appended_feedback);
+    console.log('========================');
 
     // System prompt for the recruiter persona
     const systemPrompt = {
@@ -58,9 +63,10 @@ Help them refine their search with quick, focused questions.`
     let newCandidates = null;
     if (shouldRegenerateCandidates && messages.length > 0) {
       console.log('Starting candidate regeneration process...');
+      console.log('Existing appended_feedback:', appended_feedback);
 
       // Get existing feedback context
-      const existingFeedback = req.body.appended_feedback || '';
+      const existingFeedback = appended_feedback || '';
 
       // Consolidate all feedback into one coherent set
       const consolidationPrompt = {
