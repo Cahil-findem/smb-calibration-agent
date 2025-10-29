@@ -47,6 +47,11 @@ const ChatPane: React.FC<ChatPaneProps> = ({ isOpen, onClose, candidates = [], o
   const sendMessage = async (userMessage: string, shouldRegenerate = false) => {
     if (!userMessage.trim() || isLoading) return;
 
+    console.log('=== SEND MESSAGE START ===');
+    console.log('Current appendedFeedback state:', appendedFeedback);
+    console.log('shouldRegenerate:', shouldRegenerate);
+    console.log('=========================');
+
     // Add user message
     let newMessages = [...messages, { role: 'user' as const, content: userMessage }];
 
@@ -117,7 +122,8 @@ const ChatPane: React.FC<ChatPaneProps> = ({ isOpen, onClose, candidates = [], o
         // If new candidates were generated, update them
         if (data.newCandidates && data.newCandidates.candidates) {
           console.log('=== RECEIVED NEW CANDIDATES ===');
-          console.log('Updated Appended Feedback:', data.newCandidates.appended_feedback);
+          console.log('Old appendedFeedback state:', appendedFeedback);
+          console.log('New Appended Feedback from API:', data.newCandidates.appended_feedback);
           console.log('New Candidates:', data.newCandidates.candidates);
           console.log('===============================');
 
@@ -126,11 +132,15 @@ const ChatPane: React.FC<ChatPaneProps> = ({ isOpen, onClose, candidates = [], o
           setPreviousFeedback(appendedFeedback);
           setHasRegenerated(true);
 
+          console.log('Setting appendedFeedback to:', data.newCandidates.appended_feedback);
           setAppendedFeedback(data.newCandidates.appended_feedback);
+
           if (onCandidatesUpdate) {
             onCandidatesUpdate(data.newCandidates.candidates, data.newCandidates.appended_feedback);
           }
           setIsRegenerating(false);
+
+          console.log('appendedFeedback state should now be updated (will reflect on next render)');
         }
       } else {
         console.error('Chat API error:', data.error);
