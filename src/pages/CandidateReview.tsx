@@ -89,7 +89,6 @@ const CandidateReview: React.FC = () => {
   const [candidates, setCandidates] = useState<Candidate[]>(defaultCandidates);
   const [isScrolled, setIsScrolled] = useState(false);
   const [logoOpacity, setLogoOpacity] = useState(1);
-  const [visibleMessages, setVisibleMessages] = useState<number[]>([]);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [_appendedFeedback, setAppendedFeedback] = useState('');
   const [isLoadingCandidates, setIsLoadingCandidates] = useState(false);
