@@ -63,7 +63,6 @@ app.post('/api/analyze-job-description', async (req, res) => {
     const response = await openai.responses.create({
       prompt: {
         id: 'pmpt_68fc0cf5731c8190ad4b3eed58fa8ba500f7b712f3a134f9',
-        version: '2',
         variables: {
           role_brief,
           appended_feedback,
@@ -241,7 +240,6 @@ Format as a bulleted list of clear, actionable points.`
       const response = await openai.responses.create({
         prompt: {
           id: 'pmpt_68fc0cf5731c8190ad4b3eed58fa8ba500f7b712f3a134f9',
-          version: '2',
           variables: {
             role_brief,
             appended_feedback: updatedFeedback,
