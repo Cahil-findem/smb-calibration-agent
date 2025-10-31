@@ -348,14 +348,20 @@ app.post('/api/generate-screening-questions', async (req, res) => {
   try {
     const { jobDescription } = req.body;
 
-    const response = await openai.responses.create({
+    const requestPayload = {
       prompt: {
         id: 'pmpt_68fc1322df1c8190a61f43b096b278ee0cde8553711b2931',
         variables: {
           role_brief: jobDescription,
         },
       },
-    });
+    };
+
+    console.log('=== SCREENING QUESTIONS API REQUEST ===');
+    console.log(JSON.stringify(requestPayload, null, 2));
+    console.log('=======================================');
+
+    const response = await openai.responses.create(requestPayload);
 
     console.log('OpenAI Screening Questions Response:', JSON.stringify(response, null, 2));
 
