@@ -351,7 +351,6 @@ app.post('/api/generate-screening-questions', async (req, res) => {
     const response = await openai.responses.create({
       prompt: {
         id: 'pmpt_68fc1322df1c8190a61f43b096b278ee0cde8553711b2931',
-        version: '1',
         variables: {
           role_brief: jobDescription,
         },
