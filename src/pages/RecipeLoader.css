@@ -116,6 +116,14 @@
   color: #15803D;
 }
 
+.loading-card .card-icon.error {
+  background: #FEE2E2 !important;
+}
+
+.loading-card .card-icon.error .material-icons-round {
+  color: #DC2626;
+}
+
 .card-content {
   flex: 1;
   display: flex;
@@ -146,6 +154,8 @@
 /* Continue Button */
 .recipe-loader-actions {
   display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
   opacity: 0;
   animation: fadeInButton 0.6s ease forwards;
@@ -181,6 +191,12 @@
 
 .continue-button:active {
   background: #2563EB;
+}
+
+.continue-button:disabled {
+  background: #98A2B3;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .continue-button-text {

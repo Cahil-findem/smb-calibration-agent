@@ -46,6 +46,69 @@ const RecipeLoader: React.FC = () => {
 
   const [showContinue, setShowContinue] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  const [isRetrying, setIsRetrying] = useState(false);
+
+  const startCandidateGeneration = () => {
+    setHasError(false);
+    setIsRetrying(false);
+
+    const storedData = localStorage.getItem('demoSetupData');
+    if (!storedData) {
+      console.error('No setup data found in localStorage');
+      setHasError(true);
+      return;
+    }
+
+    try {
+      const demoData = JSON.parse(storedData);
+      const jobDescription = demoData.jobDescription;
+
+      if (!jobDescription) {
+        console.error('No job description found in localStorage');
+        setHasError(true);
+        return;
+      }
+
+      console.log('Starting candidate analysis...');
+
+      fetch('/api/analyze-job-description', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          role_brief: jobDescription,
+          appended_feedback: '',
+        }),
+      }).then(async (response) => {
+        const analysisData = await response.json();
+        if (analysisData.success) {
+          const storedData = localStorage.getItem('demoSetupData');
+          if (storedData) {
+            try {
+              const demoData = JSON.parse(storedData);
+              demoData.aiAnalysis = analysisData.response;
+              localStorage.setItem('demoSetupData', JSON.stringify(demoData));
+              console.log('Candidate analysis completed and stored');
+            } catch (error) {
+              console.error('Error storing analysis data:', error);
+              setHasError(true);
+            }
+          }
+        } else {
+          console.error('Analysis API Error:', analysisData.error);
+          setHasError(true);
+        }
+      }).catch((error) => {
+        console.error('Analysis Network Error:', error);
+        setHasError(true);
+      });
+    } catch (error) {
+      console.error('Error parsing localStorage:', error);
+      setHasError(true);
+    }
+  };
 
   useEffect(() => {
     const showCard = (index: number) => {
@@ -85,9 +148,32 @@ const RecipeLoader: React.FC = () => {
       return;
     }
 
-    // Poll every second for candidate data
+    // Start candidate generation if not already started
+    const storedData = localStorage.getItem('demoSetupData');
+    if (storedData) {
+      try {
+        const demoData = JSON.parse(storedData);
+        if (!demoData.aiAnalysis) {
+          console.log('No candidate data found, starting generation...');
+          startCandidateGeneration();
+        }
+      } catch (error) {
+        console.error('Error checking localStorage:', error);
+      }
+    }
+
+    // Poll every second for candidate data with 3 minute timeout
+    let pollCount = 0;
+    const maxPolls = 180; // 180 seconds (3 minutes) timeout
+
     const pollInterval = setInterval(() => {
+      pollCount++;
+
       if (checkForCandidates()) {
+        clearInterval(pollInterval);
+      } else if (pollCount >= maxPolls) {
+        console.error('Timeout waiting for candidate data');
+        setHasError(true);
         clearInterval(pollInterval);
       }
     }, 1000);
@@ -104,6 +190,12 @@ const RecipeLoader: React.FC = () => {
     } else {
       navigate('/candidate-review');
     }
+  };
+
+  const handleRetry = () => {
+    setIsRetrying(true);
+    setHasError(false);
+    startCandidateGeneration();
   };
 
   const handleRestartDemo = () => {
@@ -128,10 +220,14 @@ const RecipeLoader: React.FC = () => {
               className="x-logo"
               src="/AI Loader.gif"
               alt="Logo"
-              style={{ opacity: isComplete ? 0 : 1, transition: 'opacity 0.3s ease' }}
+              style={{ opacity: (isComplete || hasError) ? 0 : 1, transition: 'opacity 0.3s ease' }}
             />
             <h1 className="page-title">
-              {isComplete ? 'All done, hit continue when you are ready' : 'Hang tight while I process your requirements'}
+              {hasError
+                ? 'Oops! Something went wrong while generating candidates'
+                : isComplete
+                  ? 'All done, hit continue when you are ready'
+                  : 'Hang tight while I process your requirements'}
             </h1>
           </div>
         </div>
@@ -143,9 +239,9 @@ const RecipeLoader: React.FC = () => {
               key={card.id}
               className={`loading-card ${card.visible ? 'visible' : ''}`}
             >
-              <div className={`card-icon ${isComplete ? 'completed' : ''}`}>
+              <div className={`card-icon ${isComplete ? 'completed' : ''} ${hasError ? 'error' : ''}`}>
                 <span className="material-icons-round">
-                  {isComplete ? 'check_circle' : card.icon}
+                  {hasError ? 'error' : isComplete ? 'check_circle' : card.icon}
                 </span>
               </div>
               <div className="card-content">
@@ -156,8 +252,25 @@ const RecipeLoader: React.FC = () => {
           ))}
         </div>
 
+        {/* Error Message and Retry Button */}
+        {hasError && (
+          <div className="recipe-loader-actions">
+            <p className="error-message" style={{ marginBottom: '16px', color: '#dc2626', textAlign: 'center' }}>
+              This could be due to a network issue or server timeout. Please try again.
+            </p>
+            <button
+              className="continue-button"
+              onClick={handleRetry}
+              disabled={isRetrying}
+            >
+              <span className="material-icons-round" style={{ marginRight: '8px' }}>refresh</span>
+              <span className="continue-button-text">{isRetrying ? 'Retrying...' : 'Retry'}</span>
+            </button>
+          </div>
+        )}
+
         {/* Continue Button */}
-        {showContinue && (
+        {showContinue && !hasError && (
           <div className="recipe-loader-actions">
             <button
               className="continue-button"

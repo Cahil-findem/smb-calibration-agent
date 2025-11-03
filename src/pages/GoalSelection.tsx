@@ -106,38 +106,8 @@ We believe that a diverse team builds better solutions. We're committed to creat
       console.time('Screening questions API');
 
       try {
-        // Start candidate analysis in the background (don't wait for it)
-        console.log('Starting candidate analysis in background...');
-        fetch('/api/analyze-job-description', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            role_brief: jobDescription,
-            appended_feedback: '',
-          }),
-        }).then(async (response) => {
-          const analysisData = await response.json();
-          if (analysisData.success) {
-            // Store analysis results when ready
-            const storedData = localStorage.getItem('demoSetupData');
-            if (storedData) {
-              try {
-                const demoData = JSON.parse(storedData);
-                demoData.aiAnalysis = analysisData.response;
-                localStorage.setItem('demoSetupData', JSON.stringify(demoData));
-                console.log('Candidate analysis completed and stored');
-              } catch (error) {
-                console.error('Error storing analysis data:', error);
-              }
-            }
-          } else {
-            console.error('Analysis API Error:', analysisData.error);
-          }
-        }).catch((error) => {
-          console.error('Analysis Network Error:', error);
-        });
+        // Note: Candidate analysis will be started by RecipeLoader
+        // We only wait for screening questions here before navigating
 
         // Wait only for screening questions before navigating
         console.log('Fetching screening questions...');
