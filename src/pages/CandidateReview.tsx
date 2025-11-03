@@ -187,7 +187,8 @@ const CandidateReview: React.FC = () => {
                   skills: skillsPill ? skillsPill.state === 'match' : true
                 },
                 whyMatch: match.why_rich?.text || match.why_summary || 'Strong candidate based on qualifications and experience.',
-                whyRich: match.why_rich
+                whyRich: match.why_rich,
+                enrichedProfile: item.enrichedProfile || null
               };
             });
 

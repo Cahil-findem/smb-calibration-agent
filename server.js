@@ -151,6 +151,74 @@ app.post('/api/analyze-job-description', async (req, res) => {
       console.log('Avatars assigned successfully');
     }
 
+    // Generate enriched profiles for all candidates in parallel
+    if (Array.isArray(parsedContent) && parsedContent.length > 0) {
+      console.log('=== GENERATING ENRICHED PROFILES FOR ALL CANDIDATES ===');
+
+      try {
+        const enrichedProfilePromises = parsedContent.map(async (candidateData, index) => {
+          console.log(`Generating enriched profile for candidate ${index + 1}...`);
+
+          // Create candidate summary from the existing data
+          const candidate_summary = JSON.stringify(candidateData);
+
+          try {
+            const profileResponse = await openai.responses.create({
+              prompt: {
+                id: 'pmpt_690916c3451c819484dabf50be6e6137080390f4a7720edd',
+                variables: {
+                  role_brief,
+                  appended_feedback,
+                  candidate_summary,
+                },
+              },
+            });
+
+            // Extract content from profile response
+            let profileContent = null;
+            if (profileResponse.output && Array.isArray(profileResponse.output)) {
+              const messageOutput = profileResponse.output.find(item => item.type === 'message');
+              if (messageOutput && messageOutput.content && messageOutput.content[0]) {
+                profileContent = messageOutput.content[0].text;
+              }
+            }
+
+            // Parse the enriched profile
+            let enrichedProfile = null;
+            if (typeof profileContent === 'string') {
+              try {
+                enrichedProfile = JSON.parse(profileContent);
+                console.log(`Successfully parsed enriched profile for candidate ${index + 1}`);
+              } catch (error) {
+                console.error(`Failed to parse enriched profile for candidate ${index + 1}:`, error);
+                enrichedProfile = null;
+              }
+            }
+
+            return enrichedProfile;
+          } catch (error) {
+            console.error(`Error generating enriched profile for candidate ${index + 1}:`, error);
+            return null;
+          }
+        });
+
+        // Wait for all enriched profiles to complete
+        const enrichedProfiles = await Promise.all(enrichedProfilePromises);
+        console.log('All enriched profiles generated successfully');
+
+        // Attach enriched profiles to candidate data
+        parsedContent.forEach((item, index) => {
+          if (enrichedProfiles[index]) {
+            item.enrichedProfile = enrichedProfiles[index];
+          }
+        });
+
+      } catch (error) {
+        console.error('Error generating enriched profiles:', error);
+        // Continue even if enriched profiles fail
+      }
+    }
+
     res.json({
       success: true,
       response: parsedContent,
@@ -322,6 +390,69 @@ Format as a clear, consolidated list that REPLACES all previous feedback.`
         console.log('New avatars assigned successfully');
       }
 
+      // Generate enriched profiles for all regenerated candidates in parallel
+      if (Array.isArray(parsedCandidates) && parsedCandidates.length > 0) {
+        console.log('Generating enriched profiles for regenerated candidates...');
+
+        const enrichedProfilePromises = parsedCandidates.map(async (candidateData, index) => {
+          try {
+            // Prepare the candidate summary
+            const candidate_summary = JSON.stringify(candidateData);
+
+            console.log(`Calling enriched profile API for regenerated candidate ${index + 1}...`);
+
+            // Call OpenAI Prompt API for enriched profile
+            const profileResponse = await openai.responses.create({
+              prompt: {
+                id: 'pmpt_690916c3451c8190ad4b3eed58fa8ba500f7b712f3a134f9',
+                variables: {
+                  role_brief,
+                  appended_feedback: updatedFeedback,
+                  candidate_summary
+                }
+              }
+            });
+
+            // Extract content from response
+            let profileContent = null;
+            if (profileResponse.output && Array.isArray(profileResponse.output)) {
+              const messageOutput = profileResponse.output.find(item => item.type === 'message');
+              if (messageOutput && messageOutput.content && messageOutput.content[0]) {
+                profileContent = messageOutput.content[0].text;
+              }
+            }
+
+            // Parse the enriched profile JSON
+            if (typeof profileContent === 'string') {
+              try {
+                const enrichedProfile = JSON.parse(profileContent);
+                console.log(`Successfully parsed enriched profile for regenerated candidate ${index + 1}`);
+                return enrichedProfile;
+              } catch (error) {
+                console.error(`Failed to parse enriched profile JSON for candidate ${index + 1}:`, error);
+                return null;
+              }
+            }
+
+            return null;
+          } catch (error) {
+            console.error(`Error generating enriched profile for candidate ${index + 1}:`, error);
+            return null;
+          }
+        });
+
+        // Wait for all enriched profiles to complete
+        const enrichedProfiles = await Promise.all(enrichedProfilePromises);
+        console.log('All enriched profiles generated for regenerated candidates');
+
+        // Attach enriched profiles to candidate data
+        parsedCandidates.forEach((item, index) => {
+          if (enrichedProfiles[index]) {
+            item.enrichedProfile = enrichedProfiles[index];
+          }
+        });
+      }
+
       newCandidates = {
         candidates: parsedCandidates,
         appended_feedback: updatedFeedback,
@@ -424,6 +555,71 @@ app.post('/api/generate-screening-questions', async (req, res) => {
     });
   } catch (error) {
     console.error('OpenAI Screening Questions Error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
+// Generate enriched candidate profile
+app.post('/api/generate-candidate-profile', async (req, res) => {
+  try {
+    const { role_brief, appended_feedback = '', candidate_summary } = req.body;
+
+    console.log('=== GENERATE CANDIDATE PROFILE REQUEST ===');
+    console.log('Role Brief:', role_brief);
+    console.log('Appended Feedback:', appended_feedback);
+    console.log('Candidate Summary:', candidate_summary);
+    console.log('==========================================');
+
+    const response = await openai.responses.create({
+      prompt: {
+        id: 'pmpt_690916c3451c819484dabf50be6e6137080390f4a7720edd',
+        variables: {
+          role_brief,
+          appended_feedback,
+          candidate_summary,
+        },
+      },
+    });
+
+    console.log('OpenAI Full Response:', JSON.stringify(response, null, 2));
+
+    // Extract the actual content from the response
+    let content = null;
+
+    if (response.output && Array.isArray(response.output)) {
+      // Find the message output (usually the second item)
+      const messageOutput = response.output.find(item => item.type === 'message');
+      if (messageOutput && messageOutput.content && messageOutput.content[0]) {
+        content = messageOutput.content[0].text;
+      }
+    }
+
+    console.log('Extracted Content (raw):', content);
+
+    // Parse the JSON string
+    let parsedContent = null;
+    if (typeof content === 'string') {
+      try {
+        parsedContent = JSON.parse(content);
+        console.log('Successfully parsed enriched candidate profile data');
+        console.log('Profile structure:', Object.keys(parsedContent));
+      } catch (error) {
+        console.error('Failed to parse JSON:', error);
+        parsedContent = content; // Fall back to raw string
+      }
+    } else {
+      parsedContent = content;
+    }
+
+    res.json({
+      success: true,
+      profile: parsedContent,
+    });
+  } catch (error) {
+    console.error('OpenAI Candidate Profile API Error:', error);
     res.status(500).json({
       success: false,
       error: error.message,
