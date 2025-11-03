@@ -1,0 +1,308 @@
+{
+  "candidateProfile": {
+    "description": "Complete data structure for the candidate profile slideout panel",
+    "schema": {
+      "profileHeader": {
+        "description": "Top card with candidate's basic information",
+        "fields": {
+          "avatar": {
+            "type": "string",
+            "description": "URL to candidate's avatar image or emoji",
+            "example": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=faces"
+          },
+          "name": {
+            "type": "string",
+            "description": "Full name of the candidate",
+            "example": "Steve Harrington"
+          },
+          "title": {
+            "type": "string",
+            "description": "Current job title",
+            "example": "Staff Software Engineer"
+          },
+          "company": {
+            "type": "string",
+            "description": "Current company name",
+            "example": "Google"
+          },
+          "companyLogo": {
+            "type": "string",
+            "description": "Company logo (emoji or URL)",
+            "example": "🔷"
+          },
+          "tenure": {
+            "type": "string",
+            "description": "Length of time at current company",
+            "example": "8 year tenure"
+          },
+          "location": {
+            "type": "string",
+            "description": "Current location (city, state/country)",
+            "example": "San Francisco, CA"
+          }
+        }
+      },
+      "workExperience": {
+        "description": "Work history with stats and timeline",
+        "fields": {
+          "stats": {
+            "type": "object",
+            "description": "Aggregate statistics about work history",
+            "properties": {
+              "avgTenure": {
+                "type": "string",
+                "description": "Average tenure across all positions",
+                "example": "2.5 years"
+              },
+              "currentTenure": {
+                "type": "string",
+                "description": "Time at current position",
+                "example": "2.2 years"
+              },
+              "totalExperience": {
+                "type": "string",
+                "description": "Total years of professional experience",
+                "example": "14 years"
+              }
+            }
+          },
+          "positions": {
+            "type": "array",
+            "description": "List of work positions in reverse chronological order",
+            "items": {
+              "type": "object",
+              "properties": {
+                "company": {
+                  "type": "string",
+                  "description": "Company name",
+                  "example": "Google"
+                },
+                "companyLogo": {
+                  "type": "string",
+                  "description": "Company logo (emoji or URL)",
+                  "example": "🔷"
+                },
+                "totalYears": {
+                  "type": "string",
+                  "description": "Total years at this company (for multi-role companies)",
+                  "example": "8 years",
+                  "optional": true
+                },
+                "roles": {
+                  "type": "array",
+                  "description": "List of roles at this company (can be single or multiple)",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "description": "Job title/role",
+                        "example": "Principle Engineer"
+                      },
+                      "startDate": {
+                        "type": "string",
+                        "description": "Start date of the role",
+                        "example": "Jan 2020"
+                      },
+                      "endDate": {
+                        "type": "string",
+                        "description": "End date (or 'Present' if current)",
+                        "example": "Present"
+                      },
+                      "duration": {
+                        "type": "string",
+                        "description": "Length of time in this role",
+                        "example": "2 years"
+                      },
+                      "location": {
+                        "type": "string",
+                        "description": "Work location for this role",
+                        "example": "San Francisco, CA"
+                      },
+                      "description": {
+                        "type": "string",
+                        "description": "Brief description of responsibilities and achievements",
+                        "example": "Built, designed, and shipped complex products on a global scale."
+                      }
+                    }
+                  }
+                },
+                "isMultiRole": {
+                  "type": "boolean",
+                  "description": "Whether the candidate held multiple roles at this company",
+                  "example": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "education": {
+        "description": "Educational background",
+        "fields": {
+          "degrees": {
+            "type": "array",
+            "description": "List of degrees in reverse chronological order",
+            "items": {
+              "type": "object",
+              "properties": {
+                "degree": {
+                  "type": "string",
+                  "description": "Degree type (PhD, MS, BA, BS, etc.)",
+                  "example": "PhD"
+                },
+                "field": {
+                  "type": "string",
+                  "description": "Field of study",
+                  "example": "Computer Science"
+                },
+                "school": {
+                  "type": "string",
+                  "description": "Institution name",
+                  "example": "Yale"
+                },
+                "startYear": {
+                  "type": "string",
+                  "description": "Start year or date",
+                  "example": "Jan 2010"
+                },
+                "endYear": {
+                  "type": "string",
+                  "description": "End year or date",
+                  "example": "Jan 2012"
+                },
+                "duration": {
+                  "type": "string",
+                  "description": "Length of program",
+                  "example": "2 years"
+                },
+                "icon": {
+                  "type": "string",
+                  "description": "Icon for the degree (emoji or URL)",
+                  "example": "🎓"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "exampleData": {
+    "profileHeader": {
+      "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=faces",
+      "name": "Steve Harrington",
+      "title": "Staff Software Engineer",
+      "company": "Google",
+      "companyLogo": "🔷",
+      "tenure": "8 year tenure",
+      "location": "San Francisco, CA"
+    },
+    "workExperience": {
+      "stats": {
+        "avgTenure": "2.5 years",
+        "currentTenure": "2.2 years",
+        "totalExperience": "14 years"
+      },
+      "positions": [
+        {
+          "company": "Google",
+          "companyLogo": "🔷",
+          "totalYears": "8 years",
+          "isMultiRole": true,
+          "roles": [
+            {
+              "title": "Principle Engineer",
+              "startDate": "Jan 2020",
+              "endDate": "Present",
+              "duration": "2 years",
+              "location": "San Francisco, CA",
+              "description": "Built, designed, and shipped complex products on a global scale."
+            },
+            {
+              "title": "Senior Engineer",
+              "startDate": "Jan 2018",
+              "endDate": "Jan 2020",
+              "duration": "2 years",
+              "location": "San Francisco, CA",
+              "description": "As a software engineer at Google, I collaborated on cutting-edge projects, refining my coding skills and problem-solving abilities within a dynamic team environment."
+            },
+            {
+              "title": "Junior Engineer",
+              "startDate": "Jan 2014",
+              "endDate": "Jan 2018",
+              "duration": "4 years",
+              "location": "San Francisco, CA",
+              "description": "As a junior engineer, I enthusiastically immersed myself in diverse projects, eagerly absorbing knowledge and honing my technical skills."
+            }
+          ]
+        },
+        {
+          "company": "Beamery",
+          "companyLogo": "🏢",
+          "isMultiRole": false,
+          "roles": [
+            {
+              "title": "Junior Engineer",
+              "startDate": "Jan 2012",
+              "endDate": "Jan 2014",
+              "duration": "2 years",
+              "location": "San Francisco, CA",
+              "description": "As a junior engineer, I enthusiastically immersed myself in diverse projects."
+            }
+          ]
+        }
+      ]
+    },
+    "education": {
+      "degrees": [
+        {
+          "degree": "PhD",
+          "field": "Computer Science",
+          "school": "Yale",
+          "startYear": "Jan 2010",
+          "endYear": "Jan 2012",
+          "duration": "2 years",
+          "icon": "🎓"
+        },
+        {
+          "degree": "BA",
+          "field": "Computer Science",
+          "school": "Berkeley",
+          "startYear": "2006",
+          "endYear": "2010",
+          "duration": "4 years",
+          "icon": "🎓"
+        }
+      ]
+    }
+  },
+  "notes": {
+    "styling": {
+      "profileCard": "White background (#FFFFFF), border (#EAECF0), 12px border-radius, 20px padding",
+      "avatar": "80px circular with 0.375px border (#EAECF0), background (#C5E0FF)",
+      "companyLogoTimeline": "48px square with 1px border (#EAECF0), 4px border-radius",
+      "educationIcon": "36px square with 1.313px border (#EAECF0), 4.8px border-radius",
+      "timelineLine": "4px wide, 182px tall, gradient from #EAECF0 to transparent"
+    },
+    "typography": {
+      "cardTitle": "18px Roboto Medium, #313131, 24px line-height",
+      "candidateName": "18px Roboto Medium, #101828",
+      "jobTitle": "14px Roboto Regular, #465366",
+      "roleTitle": "14px Roboto Medium, #313131, 19.6px line-height",
+      "companyName": "14px Roboto Medium, #101828, underlined",
+      "dates": "12px Roboto Regular, #667085, 14.4px line-height",
+      "description": "12px Roboto Regular, #667085, 14.4px line-height",
+      "statLabel": "13px Roboto Regular, #667085, 18px line-height",
+      "statValue": "16px Roboto Medium, #101828, 22px line-height"
+    },
+    "spacing": {
+      "cardGap": "12px between cards",
+      "contentPadding": "24px around profile-content",
+      "sectionGap": "20px between timeline entries",
+      "roleGap": "12px between roles within same company",
+      "avatarGap": "20px between avatar and info",
+      "iconGap": "12px between icon and content"
+    }
+  }
+}

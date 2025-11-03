@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './CandidateReview.css';
 import ChatPane from '../components/ChatPane';
+import CandidateProfile from '../components/CandidateProfile';
 
 interface Candidate {
   id: number;
@@ -91,6 +92,9 @@ const CandidateReview: React.FC = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [_appendedFeedback, setAppendedFeedback] = useState('');
   const [isLoadingCandidates, setIsLoadingCandidates] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
+  const [selectedCandidateIndex, setSelectedCandidateIndex] = useState(0);
 
   // Add/remove chat-open class to body when chat state changes
   useEffect(() => {
@@ -220,6 +224,26 @@ const CandidateReview: React.FC = () => {
     navigate('/success');
   };
 
+  const handleViewCandidate = (candidate: Candidate) => {
+    const index = candidates.findIndex(c => c.id === candidate.id);
+    setSelectedCandidate(candidate);
+    setSelectedCandidateIndex(index >= 0 ? index : 0);
+    setIsProfileOpen(true);
+  };
+
+  const handleNavigateCandidate = (direction: 'up' | 'down') => {
+    let newIndex = selectedCandidateIndex;
+
+    if (direction === 'up' && selectedCandidateIndex > 0) {
+      newIndex = selectedCandidateIndex - 1;
+    } else if (direction === 'down' && selectedCandidateIndex < candidates.length - 1) {
+      newIndex = selectedCandidateIndex + 1;
+    }
+
+    setSelectedCandidateIndex(newIndex);
+    setSelectedCandidate(candidates[newIndex]);
+  };
+
   const handleCandidatesUpdate = (newCandidatesData: any[], updatedFeedback: string, isLoading: boolean = false) => {
     // Set loading state
     if (isLoading) {
@@ -304,6 +328,17 @@ const CandidateReview: React.FC = () => {
       <div className="candidates-list">
         {candidates.map((candidate) => (
           <div key={candidate.id} className={`candidate-row ${isLoadingCandidates ? 'loading' : ''}`}>
+            {/* View Candidate Button - Shows on Hover */}
+            <button
+              className="view-candidate-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleViewCandidate(candidate);
+              }}
+            >
+              View Candidate
+            </button>
+
             <div className="candidate-main-info">
               <div className="candidate-details">
                 <div className="candidate-avatar">
@@ -408,6 +443,16 @@ const CandidateReview: React.FC = () => {
         onClose={() => setIsChatOpen(false)}
         candidates={candidates}
         onCandidatesUpdate={handleCandidatesUpdate}
+      />
+
+      {/* Candidate Profile Panel */}
+      <CandidateProfile
+        isOpen={isProfileOpen}
+        onClose={() => setIsProfileOpen(false)}
+        candidate={selectedCandidate}
+        candidates={candidates}
+        currentIndex={selectedCandidateIndex}
+        onNavigate={handleNavigateCandidate}
       />
       </div>
     </div>
