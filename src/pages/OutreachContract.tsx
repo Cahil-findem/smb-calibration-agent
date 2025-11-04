@@ -13,8 +13,6 @@ interface ScreeningQuestion {
 const OutreachContract: React.FC = () => {
   const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
-  const [jobDescription, setJobDescription] = useState('');
-  const [screeningQuestions, setScreeningQuestions] = useState<ScreeningQuestion[]>([]);
   const [emailSubject, setEmailSubject] = useState('');
   const [emailBody, setEmailBody] = useState('');
   const [isLoadingEmail, setIsLoadingEmail] = useState(true);
@@ -31,9 +29,6 @@ const OutreachContract: React.FC = () => {
         const data = JSON.parse(storedData);
         const jobDesc = data.jobDescription || '';
         const questions = data.screeningQuestions || [];
-
-        setJobDescription(jobDesc);
-        setScreeningQuestions(questions);
 
         // Generate outreach email
         if (jobDesc && questions.length > 0) {

@@ -122,7 +122,7 @@ const CandidateProfile: React.FC<CandidateProfileProps> = ({
 
   // Use enrichedProfile data if available, otherwise fall back to candidate data
   // The enrichedProfile structure is: {candidate_id: X, candidateProfile: {...}}
-  const enrichedData = candidate.enrichedProfile?.candidateProfile || {};
+  const enrichedData = (candidate.enrichedProfile as any)?.candidateProfile || {};
   const profileData = enrichedData.profileHeader || {};
   const workExp = enrichedData.workExperience;
   const education = enrichedData.education;
@@ -236,7 +236,7 @@ const CandidateProfile: React.FC<CandidateProfileProps> = ({
             {/* Experience Timeline */}
             {workExp.positions && workExp.positions.length > 0 && (
             <div className="experience-timeline">
-              {workExp.positions.map((position, posIndex) => (
+              {workExp.positions.map((position: any, posIndex: number) => (
                 <div key={posIndex}>
                   {posIndex > 0 && <div className="experience-divider"></div>}
 
@@ -257,7 +257,7 @@ const CandidateProfile: React.FC<CandidateProfileProps> = ({
                         </div>
                       )}
 
-                      {position.roles.map((role, roleIndex) => (
+                      {position.roles.map((role: any, roleIndex: number) => (
                         <div key={roleIndex} className="role-entry">
                           <div className="role-title-row">
                             <span className="role-title">{role.title}</span>
@@ -290,7 +290,7 @@ const CandidateProfile: React.FC<CandidateProfileProps> = ({
             </div>
 
             <div className="education-timeline">
-              {education.degrees.map((degree, index) => (
+              {education.degrees.map((degree: any, index: number) => (
                 <div key={index}>
                   {index > 0 && <div className="education-divider"></div>}
 
