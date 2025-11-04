@@ -432,7 +432,7 @@ const CandidateReview: React.FC = () => {
               Back
             </button>
             <button className="header-btn-primary" onClick={handleContinue}>
-              Activate Sourcing
+              Review Outreach
             </button>
           </div>
         </div>

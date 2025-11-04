@@ -1,10 +1,82 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './OutreachContract.css';
+import EmailGenerationLoader from '../components/EmailGenerationLoader';
+import EmailHeader from '../components/EmailHeader';
+
+interface ScreeningQuestion {
+  id: number;
+  question: string;
+  intent: string;
+}
 
 const OutreachContract: React.FC = () => {
   const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [jobDescription, setJobDescription] = useState('');
+  const [screeningQuestions, setScreeningQuestions] = useState<ScreeningQuestion[]>([]);
+  const [emailSubject, setEmailSubject] = useState('');
+  const [emailBody, setEmailBody] = useState('');
+  const [isLoadingEmail, setIsLoadingEmail] = useState(true);
+
+  useEffect(() => {
+    // Load data from localStorage and generate email
+    const storedData = localStorage.getItem('demoSetupData');
+    if (storedData) {
+      try {
+        const data = JSON.parse(storedData);
+        const jobDesc = data.jobDescription || '';
+        const questions = data.screeningQuestions || [];
+
+        setJobDescription(jobDesc);
+        setScreeningQuestions(questions);
+
+        // Generate outreach email
+        if (jobDesc && questions.length > 0) {
+          generateOutreachEmail(jobDesc, questions);
+        } else {
+          setIsLoadingEmail(false);
+        }
+      } catch (error) {
+        console.error('Error loading data from localStorage:', error);
+        setIsLoadingEmail(false);
+      }
+    } else {
+      setIsLoadingEmail(false);
+    }
+  }, []);
+
+  const generateOutreachEmail = async (jobDesc: string, questions: ScreeningQuestion[]) => {
+    try {
+      setIsLoadingEmail(true);
+
+      // Start both the API call and the 10-second timer
+      const [data] = await Promise.all([
+        fetch('/api/generate-outreach-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            role_brief: jobDesc,
+            screening_questions: questions,
+          }),
+        }).then(res => res.json()),
+        new Promise(resolve => setTimeout(resolve, 10000)) // 10 seconds minimum
+      ]);
+
+      if (data.success) {
+        setEmailSubject(data.subject || '');
+        setEmailBody(data.emailBody);
+      } else {
+        console.error('Failed to generate email:', data.error);
+      }
+    } catch (error) {
+      console.error('Error generating outreach email:', error);
+    } finally {
+      setIsLoadingEmail(false);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -59,61 +131,21 @@ const OutreachContract: React.FC = () => {
             <div className="email-preview-card">
               {/* Content */}
               <div className="email-content">
-                {/* Hero Section */}
+                {/* Email Section */}
                 <div className="hero-section">
-                  <div className="hero-container">
-                    <div className="hero-image-wrapper">
-                      <img
-                        src="/Email%20image.png"
-                        alt="Hero"
-                        className="hero-image"
-                      />
-                    </div>
-                  </div>
-
                   {/* Text Section */}
                   <div className="email-text-section">
-                    <h2 className="email-heading">
-                      Your sourcing strategy is ready
-                    </h2>
-                    <div className="email-body-text">
-                      <p>
-                        I've calibrated on your ideal candidate profile based on the job description and your feedback.
-                        I'll continuously source and evaluate candidates matching your criteria.
-                      </p>
-                      <p>
-                        When I find strong matches, you'll receive notifications with detailed candidate profiles,
-                        match explanations, and enriched work history to help you make quick decisions.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* CTA Section */}
-                  <div className="cta-section">
-                    <div className="cta-divider"></div>
-                    <p className="cta-text">
-                      Need to adjust the search criteria or candidate profile? You can refine anytime!
-                    </p>
-                    <button
-                      className="cta-button"
-                      onClick={() => navigate('/candidate-review')}
-                    >
-                      <span className="material-icons-round">tune</span>
-                      <span>Refine Search</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Footer */}
-                <div className="email-footer">
-                  <img src="/Kong_Footer_Logo.png" alt="Logo" className="footer-logo" />
-                  <div className="footer-divider-line"></div>
-                  <p className="footer-text">
-                    Powered by AI-driven candidate sourcing and matching.
-                  </p>
-                  <div className="footer-copyright">
-                    <p>© 2024 Findem Inc. All rights reserved.</p>
-                    <p>Mountain View, California, USA</p>
+                    {isLoadingEmail ? (
+                      <EmailGenerationLoader />
+                    ) : (
+                      <>
+                        <EmailHeader subject={emailSubject || "Default Subject Line"} />
+                        <div
+                          className="email-body-text"
+                          dangerouslySetInnerHTML={{ __html: emailBody }}
+                        />
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -122,15 +154,28 @@ const OutreachContract: React.FC = () => {
 
           {/* Right Column - Contract Cards */}
           <div className="right-column">
+            {/* Delivery */}
+            <div className="contract-card">
+              <div className="contract-icon-wrapper">
+                <span className="material-icons-round">schedule</span>
+              </div>
+              <div className="contract-content">
+                <p className="contract-title">Delivery</p>
+                <p className="contract-description">
+                  Receive <strong>3 interview-ready candidates</strong> within 2 weeks.
+                </p>
+              </div>
+            </div>
+
             {/* Precision */}
             <div className="contract-card">
               <div className="contract-icon-wrapper">
-                <span className="material-icons-round">auto_awesome</span>
+                <span className="material-icons-round">gps_fixed</span>
               </div>
               <div className="contract-content">
                 <p className="contract-title">Precision</p>
                 <p className="contract-description">
-                  Source candidates that closely match your <strong>exact requirements</strong> and ideal profile.
+                  I'll only reach out to candidates who meet your <strong>exact requirements</strong>.
                 </p>
               </div>
             </div>
@@ -143,33 +188,20 @@ const OutreachContract: React.FC = () => {
               <div className="contract-content">
                 <p className="contract-title">Continuous</p>
                 <p className="contract-description">
-                  Automatically discover new candidates as they become available in the <strong>talent market</strong>.
+                  Automatically discover and contact new talent as they <strong>enter the market</strong>.
                 </p>
               </div>
             </div>
 
-            {/* Quality */}
+            {/* Automated Outreach */}
             <div className="contract-card">
               <div className="contract-icon-wrapper">
-                <span className="material-icons-round">verified</span>
+                <span className="material-icons-round">auto_awesome</span>
               </div>
               <div className="contract-content">
-                <p className="contract-title">Quality</p>
+                <p className="contract-title">Automated Outreach</p>
                 <p className="contract-description">
-                  Every candidate includes <strong>enriched profiles</strong> with detailed work history and education.
-                </p>
-              </div>
-            </div>
-
-            {/* Insights */}
-            <div className="contract-card">
-              <div className="contract-icon-wrapper">
-                <span className="material-icons-round">insights</span>
-              </div>
-              <div className="contract-content">
-                <p className="contract-title">Insights</p>
-                <p className="contract-description">
-                  Get <strong>clear explanations</strong> of why each candidate matches your requirements.
+                  All candidate communication and screening are <strong>handled autonomously</strong>.
                 </p>
               </div>
             </div>
@@ -182,7 +214,7 @@ const OutreachContract: React.FC = () => {
               <div className="contract-content">
                 <p className="contract-title">Control</p>
                 <p className="contract-description">
-                  Refine your search criteria <strong>anytime</strong> through conversational feedback.
+                  Pause, adjust, or stop sourcing <strong>anytime</strong>.
                 </p>
               </div>
             </div>

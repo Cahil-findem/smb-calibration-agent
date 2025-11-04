@@ -1,0 +1,138 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
+
+.email-header-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.email-header-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #EAECF0;
+}
+
+.email-header-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+}
+
+.email-label {
+  color: #465366;
+  font-size: 16px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+.email-header-divider {
+  width: 100%;
+  height: 1px;
+  background: #EAECF0;
+  margin: 8px 0;
+}
+
+/* Campaign Preview Chip */
+.campaign-preview-chip-header {
+  position: relative;
+  height: 36px;
+  display: inline-flex;
+}
+
+.campaign-preview-chip-header .chip-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.campaign-preview-chip-header .chip-content {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  height: 36px;
+  color: #4A2EDF;
+  font-size: 14px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+.campaign-preview-chip-header .chip-content .material-icons-round {
+  font-size: 18px;
+  color: #4A2EDF;
+}
+
+/* Recipient Chip */
+.recipient-chip {
+  background: white;
+  border: 1px solid #DCDFEA;
+  border-radius: 16px;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: 3px 10px 3px 3px;
+}
+
+.recipient-avatar {
+  width: 20px;
+  height: 20px;
+  border-radius: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.recipient-avatar span {
+  color: white;
+  font-size: 10px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  line-height: 9px;
+  text-align: center;
+}
+
+.blue-avatar {
+  background: #167FF9;
+}
+
+.green-avatar {
+  background: #6BCA85;
+}
+
+.recipient-name {
+  color: #465366;
+  font-size: 16px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  line-height: 24px;
+  white-space: nowrap;
+}
+
+.dropdown-icon {
+  color: #465366;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+/* Subject */
+.email-subject-text {
+  color: #313131;
+  font-size: 16px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  line-height: 24px;
+  margin: 0;
+  white-space: nowrap;
+}

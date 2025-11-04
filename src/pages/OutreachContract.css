@@ -26,7 +26,8 @@
   top: 0;
   background: white;
   z-index: 10;
-  padding-top: 0;
+  padding-top: 12px;
+  margin-bottom: 20px;
   transition: margin-top 0.2s ease;
 }
 
@@ -155,6 +156,43 @@
   overflow: hidden;
 }
 
+/* Campaign Preview Chip */
+.campaign-preview-chip {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  z-index: 10;
+  height: 36px;
+}
+
+.chip-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.chip-content {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  height: 36px;
+  color: #4A2EDF;
+  font-size: 14px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+.chip-content .material-icons-round {
+  font-size: 18px;
+  color: #4A2EDF;
+}
+
 .email-content {
   display: flex;
   flex-direction: column;
@@ -170,6 +208,8 @@
   flex-direction: column;
   padding: 0 24px 40px 24px;
   gap: 0;
+  position: relative;
+  min-height: 600px;
 }
 
 .hero-container {
@@ -202,7 +242,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 24px 20px 0 20px;
+  padding: 0;
 }
 
 .email-heading {
@@ -213,6 +253,7 @@
   line-height: 32px;
   margin: 0;
   text-align: left;
+  align-self: flex-start;
 }
 
 .email-body-text {
@@ -222,6 +263,17 @@
   font-weight: 400;
   line-height: 26px;
   text-align: left;
+  width: 100%;
+}
+
+.email-loading {
+  color: #667085;
+  font-size: 14px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  line-height: 20px;
+  text-align: center;
+  padding: 40px 20px;
 }
 
 .email-body-text p {
@@ -229,6 +281,24 @@
 }
 
 .email-body-text p:last-child {
+  margin-bottom: 0;
+}
+
+.screening-questions-list {
+  margin: 12px 0;
+  padding-left: 20px;
+  color: #465366;
+  font-size: 16px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  line-height: 26px;
+}
+
+.screening-questions-list li {
+  margin-bottom: 8px;
+}
+
+.screening-questions-list li:last-child {
   margin-bottom: 0;
 }
 
