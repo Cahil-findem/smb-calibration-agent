@@ -404,7 +404,7 @@ Format as a clear, consolidated list that REPLACES all previous feedback.`
             // Call OpenAI Prompt API for enriched profile
             const profileResponse = await openai.responses.create({
               prompt: {
-                id: 'pmpt_68fc0cf5731c8190ad4b3eed58fa8ba500f7b712f3a134f9',
+                id: 'pmpt_690916c3451c819484dabf50be6e6137080390f4a7720edd',
                 variables: {
                   role_brief,
                   appended_feedback: updatedFeedback,
