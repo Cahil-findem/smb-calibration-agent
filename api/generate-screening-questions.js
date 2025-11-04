@@ -26,15 +26,20 @@ export default async function handler(req, res) {
   try {
     const { jobDescription } = req.body;
 
-    const response = await openai.responses.create({
+    const requestPayload = {
       prompt: {
         id: 'pmpt_68fc1322df1c8190a61f43b096b278ee0cde8553711b2931',
-        version: '1',
         variables: {
           role_brief: jobDescription,
         },
       },
-    });
+    };
+
+    console.log('=== SCREENING QUESTIONS API REQUEST ===');
+    console.log(JSON.stringify(requestPayload, null, 2));
+    console.log('=======================================');
+
+    const response = await openai.responses.create(requestPayload);
 
     console.log('OpenAI Screening Questions Response:', JSON.stringify(response, null, 2));
 
@@ -62,7 +67,7 @@ export default async function handler(req, res) {
 
         // Extract questions array from the response structure
         if (parsedData.screening_questions && Array.isArray(parsedData.screening_questions)) {
-          // Map the question objects to just the question text
+          // Extract just the question text to match frontend expectations
           questions = parsedData.screening_questions.map(q => q.question);
         } else if (Array.isArray(parsedData)) {
           questions = parsedData;
@@ -71,13 +76,12 @@ export default async function handler(req, res) {
         }
       } catch (error) {
         console.error('Failed to parse JSON:', error);
-        // Fallback parsing
-        questions = content
-          .split('\n')
-          .filter(line => line.trim().length > 0)
-          .map(line => line.replace(/^[\d\.\-\*\s]+/, '').trim())
-          .filter(line => line.length > 0)
-          .slice(0, 3);
+        // Fallback - return simple string array
+        questions = [
+          'What relevant experience do you have for this role?',
+          'What interests you most about this position?',
+          'What are your salary expectations?',
+        ];
       }
     } else {
       questions = content;

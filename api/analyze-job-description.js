@@ -111,6 +111,68 @@ export default async function handler(req, res) {
       console.log('Avatars assigned successfully');
     }
 
+    // Generate enriched profiles for all candidates in parallel
+    if (Array.isArray(parsedContent) && parsedContent.length > 0) {
+      console.log('=== GENERATING ENRICHED PROFILES FOR ALL CANDIDATES ===');
+
+      try {
+        const enrichedProfilePromises = parsedContent.map(async (candidateData, index) => {
+          console.log(`Generating enriched profile for candidate ${index + 1}...`);
+
+          const candidate_summary = JSON.stringify(candidateData);
+
+          try {
+            const profileResponse = await openai.responses.create({
+              prompt: {
+                id: 'pmpt_690916c3451c819484dabf50be6e6137080390f4a7720edd',
+                variables: {
+                  role_brief,
+                  appended_feedback,
+                  candidate_summary,
+                },
+              },
+            });
+
+            let profileContent = null;
+            if (profileResponse.output && Array.isArray(profileResponse.output)) {
+              const messageOutput = profileResponse.output.find(item => item.type === 'message');
+              if (messageOutput && messageOutput.content && messageOutput.content[0]) {
+                profileContent = messageOutput.content[0].text;
+              }
+            }
+
+            let enrichedProfile = null;
+            if (typeof profileContent === 'string') {
+              try {
+                enrichedProfile = JSON.parse(profileContent);
+                console.log(`Successfully parsed enriched profile for candidate ${index + 1}`);
+              } catch (error) {
+                console.error(`Failed to parse enriched profile for candidate ${index + 1}:`, error);
+                enrichedProfile = null;
+              }
+            }
+
+            return enrichedProfile;
+          } catch (error) {
+            console.error(`Error generating enriched profile for candidate ${index + 1}:`, error);
+            return null;
+          }
+        });
+
+        const enrichedProfiles = await Promise.all(enrichedProfilePromises);
+        console.log('All enriched profiles generated successfully');
+
+        parsedContent.forEach((item, index) => {
+          if (enrichedProfiles[index]) {
+            item.enrichedProfile = enrichedProfiles[index];
+          }
+        });
+
+      } catch (error) {
+        console.error('Error generating enriched profiles:', error);
+      }
+    }
+
     res.status(200).json({
       success: true,
       response: parsedContent,
