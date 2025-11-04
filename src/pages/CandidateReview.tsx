@@ -222,7 +222,7 @@ const CandidateReview: React.FC = () => {
   }, []);
 
   const handleContinue = () => {
-    navigate('/success');
+    navigate('/outreach-contract');
   };
 
   const handleViewCandidate = (candidate: Candidate) => {

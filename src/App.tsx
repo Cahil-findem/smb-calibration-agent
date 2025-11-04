@@ -7,6 +7,7 @@ import GoalSelection from './pages/GoalSelection'
 import ScreeningQuestions from './pages/ScreeningQuestions'
 import RecipeLoader from './pages/RecipeLoader'
 import CandidateReview from './pages/CandidateReview'
+import OutreachContract from './pages/OutreachContract'
 import Success from './pages/Success'
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
           <Route path="/screening-questions" element={<ScreeningQuestions />} />
           <Route path="/recipe-loader" element={<RecipeLoader />} />
           <Route path="/candidate-review" element={<CandidateReview />} />
+          <Route path="/outreach-contract" element={<OutreachContract />} />
           <Route path="/success" element={<Success />} />
           {/* Other routes will be added here */}
         </Routes>
