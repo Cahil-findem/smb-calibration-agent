@@ -19,6 +19,10 @@ const OutreachContract: React.FC = () => {
   const [emailBody, setEmailBody] = useState('');
   const [isLoadingEmail, setIsLoadingEmail] = useState(true);
 
+  const handleActivateSourcing = () => {
+    navigate('/success');
+  };
+
   useEffect(() => {
     // Load data from localStorage and generate email
     const storedData = localStorage.getItem('demoSetupData');
@@ -114,7 +118,7 @@ const OutreachContract: React.FC = () => {
               <button className="header-btn-secondary">
                 Request Changes
               </button>
-              <button className="header-btn-primary">
+              <button className="header-btn-primary" onClick={handleActivateSourcing}>
                 Activate Sourcing
               </button>
             </div>
