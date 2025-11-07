@@ -202,9 +202,9 @@
 }
 
 .btn-dark.disabled {
-  background: #9ca3af;
-  color: #d1d5db;
+  opacity: 0.5;
   cursor: not-allowed;
+  pointer-events: none;
 }
 
 /* Secondary Button Variant */
@@ -238,9 +238,9 @@
 }
 
 .btn-blue.disabled {
-  background: #9ca3af;
-  color: #d1d5db;
+  opacity: 0.5;
   cursor: not-allowed;
+  pointer-events: none;
 }
 
 /* Button Processing State */

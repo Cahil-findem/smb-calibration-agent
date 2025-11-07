@@ -7,6 +7,8 @@ interface HeaderProps {
   onCloseClick?: () => void;
   variant?: 'default' | 'chat';
   isChatOpen?: boolean;
+  showUseExampleButton?: boolean;
+  onUseExampleClick?: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -15,7 +17,9 @@ const Header: React.FC<HeaderProps> = ({
   showCloseButton = false,
   onCloseClick,
   variant = 'default',
-  isChatOpen = false
+  isChatOpen = false,
+  showUseExampleButton = false,
+  onUseExampleClick
 }) => {
   return (
     <header className={`app-header ${variant === 'chat' ? 'chat-variant' : ''} ${isChatOpen ? 'chat-open' : ''}`}>
@@ -24,6 +28,16 @@ const Header: React.FC<HeaderProps> = ({
           <div className="title-text">{title}</div>
         </div>
         <div className="header-actions">
+          {showUseExampleButton && (
+            <button
+              className="action-button use-example-button"
+              onClick={onUseExampleClick}
+              title="Use example"
+            >
+              <span className="material-icons-round">auto_fix_high</span>
+              <span className="button-text">Use example</span>
+            </button>
+          )}
           <button
             className="action-button restart-button"
             onClick={onRestart}

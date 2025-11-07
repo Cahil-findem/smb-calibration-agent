@@ -2,7 +2,11 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import './GoalSelection.css';
 
-const GoalSelection: React.FC = () => {
+interface GoalSelectionProps {
+  setUseExampleHandler: (handler: (() => void) | undefined) => void;
+}
+
+const GoalSelection: React.FC<GoalSelectionProps> = ({ setUseExampleHandler }) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [jobDescription, setJobDescription] = useState<string>('');
@@ -33,6 +37,12 @@ const GoalSelection: React.FC = () => {
       }
     }
   }, [searchParams]);
+
+  // Register the use example handler with the Header via App
+  useEffect(() => {
+    setUseExampleHandler(() => handleUseExample);
+    return () => setUseExampleHandler(undefined);
+  }, [setUseExampleHandler]);
 
   const exampleJobDescription = `What is Findem:
 
@@ -205,12 +215,6 @@ We believe that a diverse team builds better solutions. We're committed to creat
           </div>
 
           <div className={`job-description-section ${isTransitioning ? (transitionDirection === 'forward' ? 'animate-fade-out-up' : 'animate-fade-out-down') : 'animate-fade-up animate-delay-1'}`}>
-            <div className="textarea-header">
-              <button className="use-example-btn" onClick={handleUseExample}>
-                <span className="material-icons-round">auto_fix_high</span>
-                Use example
-              </button>
-            </div>
             <textarea
               className="job-description-input"
               placeholder="Paste your job description here..."

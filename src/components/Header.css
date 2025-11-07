@@ -105,6 +105,24 @@ body.chat-panel-open .app-header {
   font-weight: 400;
 }
 
+.use-example-button {
+  padding: 6px 12px;
+  height: auto;
+  gap: 6px;
+}
+
+.use-example-button .button-text {
+  color: #465366;
+  font-size: 14px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.use-example-button .material-icons-round {
+  font-size: 18px;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .app-header {

@@ -279,9 +279,9 @@
 }
 
 .btn-blue.disabled {
-  background: #9ca3af;
-  color: #d1d5db;
+  opacity: 0.5;
   cursor: not-allowed;
+  pointer-events: none;
 }
 
 /* Animation classes */
