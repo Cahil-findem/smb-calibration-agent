@@ -26,7 +26,6 @@ const emojiMap: Record<string, string> = {
   // Education emojis
   ':mortar_board:': '🎓',
   ':graduation_cap:': '🎓',
-  ':school:': '🏫',
   ':books:': '📚',
   ':book:': '📖',
   ':pencil:': '✏️',
