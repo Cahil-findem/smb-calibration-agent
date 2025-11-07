@@ -110,6 +110,15 @@ const CandidateReview: React.FC = () => {
     };
   }, [isChatOpen]);
 
+  // Auto-open chat after 5 seconds on page load
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsChatOpen(true);
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   useEffect(() => {
     // Load AI-generated candidates from localStorage
     const storedData = localStorage.getItem('demoSetupData');
@@ -284,7 +293,8 @@ const CandidateReview: React.FC = () => {
             skills: skillsPill ? skillsPill.state === 'match' : true
           },
           whyMatch: match.why_rich?.text || match.why_summary || 'Strong candidate based on qualifications and experience.',
-          whyRich: match.why_rich
+          whyRich: match.why_rich,
+          enrichedProfile: item.enrichedProfile || null
         };
       });
 
@@ -315,8 +325,8 @@ const CandidateReview: React.FC = () => {
               style={{ opacity: logoOpacity, transition: 'opacity 0.5s ease-in-out' }}
             />
             <div>
-              <h1 className="review-title">Your target candidates</h1>
-              <p className="review-subtitle">Here are 3 ideal candidates based on your requirements. We can refine them together before launching your search.</p>
+              <h1 className="review-title">Review your target candidates</h1>
+              <p className="review-subtitle">I generated 3 candidate profiles based on your requirements. Is there anything you would like to tweak?</p>
             </div>
           </div>
         </div>

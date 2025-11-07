@@ -1,5 +1,29 @@
 import { useEffect } from 'react';
 import './CandidateProfile.css';
+import { getEmoji } from '../utils/emojiConverter';
+
+// Available company logos
+const companyLogos = [
+  '/logos/logoipsum-357.svg',
+  '/logos/logoipsum-359.svg',
+  '/logos/logoipsum-365.svg',
+  '/logos/logoipsum-368.svg',
+  '/logos/logoipsum-370.svg',
+  '/logos/logoipsum-374.svg',
+  '/logos/logoipsum-376.svg',
+  '/logos/logoipsum-381.svg',
+  '/logos/logoipsum-383.svg',
+  '/logos/logoipsum-386.svg',
+  '/logos/logoipsum-394.svg',
+  '/logos/logoipsum-396.svg',
+  '/logos/logoipsum-407.svg',
+];
+
+// Get a random logo based on company name (deterministic)
+function getCompanyLogo(companyName: string): string {
+  const hash = companyName.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return companyLogos[hash % companyLogos.length];
+}
 
 interface Candidate {
   id: number;
@@ -181,7 +205,7 @@ const CandidateProfile: React.FC<CandidateProfileProps> = ({
                 {displayAvatar.startsWith('http') ? (
                   <img src={displayAvatar} alt={displayName} />
                 ) : (
-                  <span className="avatar-emoji">{displayAvatar}</span>
+                  <span className="avatar-emoji">{getEmoji(displayAvatar)}</span>
                 )}
               </div>
               <div className="profile-card-info">
@@ -190,7 +214,9 @@ const CandidateProfile: React.FC<CandidateProfileProps> = ({
                   <span className="job-title-text">{displayTitle}</span>
                   <span className="job-at-text"> at </span>
                   <div className="company-info-inline">
-                    <span className="company-logo-small">{displayCompanyLogo}</span>
+                    <div className="company-logo-small">
+                      <img src={getCompanyLogo(displayCompany)} alt={displayCompany} />
+                    </div>
                     <span className="company-name-text">{displayCompany}</span>
                     <span className="company-tenure-text">({displayTenure})</span>
                   </div>
@@ -243,7 +269,7 @@ const CandidateProfile: React.FC<CandidateProfileProps> = ({
                   <div className="experience-entry">
                     <div className="experience-left">
                       <div className="company-logo-timeline">
-                        <span>{position.companyLogo || '🏢'}</span>
+                        <img src={getCompanyLogo(position.company)} alt={position.company} />
                       </div>
                       {position.isMultiRole && position.roles.length > 1 && (
                         <div className="timeline-line"></div>
@@ -296,7 +322,7 @@ const CandidateProfile: React.FC<CandidateProfileProps> = ({
 
                   <div className="education-entry">
                     <div className="education-icon">
-                      <span>{degree.icon || '🎓'}</span>
+                      <span>{getEmoji(degree.icon) || '🎓'}</span>
                     </div>
                     <div className="education-content">
                       <div className="education-degree">

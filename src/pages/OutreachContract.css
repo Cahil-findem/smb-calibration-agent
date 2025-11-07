@@ -8,6 +8,13 @@
   flex-direction: column;
   align-items: center;
   padding: 32px 0 40px 0;
+  transition: padding-right 0.3s ease-in-out, padding-left 0.3s ease-in-out;
+}
+
+.outreach-contract.chat-open {
+  padding-right: 400px;
+  align-items: flex-start;
+  padding-left: calc((100vw - min(calc(100vw - 450px), 1092px) - 400px) / 2);
 }
 
 /* Content Wrapper */
@@ -18,6 +25,11 @@
   flex-direction: column;
   gap: 0;
   overflow: visible;
+  transition: max-width 0.3s ease-in-out;
+}
+
+.content-wrapper.chat-open {
+  max-width: min(calc(100vw - 450px), 1092px);
 }
 
 /* Sticky Header Container */

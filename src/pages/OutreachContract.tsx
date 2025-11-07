@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './OutreachContract.css';
 import EmailGenerationLoader from '../components/EmailGenerationLoader';
 import EmailHeader from '../components/EmailHeader';
+import ChatPane from '../components/ChatPane';
 
 interface ScreeningQuestion {
   id: number;
@@ -16,9 +17,14 @@ const OutreachContract: React.FC = () => {
   const [emailSubject, setEmailSubject] = useState('');
   const [emailBody, setEmailBody] = useState('');
   const [isLoadingEmail, setIsLoadingEmail] = useState(true);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const handleActivateSourcing = () => {
     navigate('/success');
+  };
+
+  const handleRequestChanges = () => {
+    setIsChatOpen(true);
   };
 
   useEffect(() => {
@@ -49,29 +55,45 @@ const OutreachContract: React.FC = () => {
     try {
       setIsLoadingEmail(true);
 
-      // Start both the API call and the 10-second timer
-      const [data] = await Promise.all([
-        fetch('/api/generate-outreach-email', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            role_brief: jobDesc,
-            screening_questions: questions,
-          }),
-        }).then(res => res.json()),
-        new Promise(resolve => setTimeout(resolve, 10000)) // 10 seconds minimum
-      ]);
+      // Use Vercel API endpoint in production, localhost in development
+      const apiUrl = window.location.hostname === 'localhost'
+        ? 'http://localhost:3004/api/generate-outreach-email'
+        : '/api/generate-outreach-email';
 
+      // Start the API call
+      const apiPromise = fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          role_brief: jobDesc,
+          screening_questions: questions,
+        }),
+      }).then(res => res.json());
+
+      // Start the minimum 10-second timer
+      const timerPromise = new Promise(resolve => setTimeout(resolve, 10000));
+
+      // Wait for the API response (but don't block on timer yet)
+      const data = await apiPromise;
+
+      // Update the email content as soon as API returns
       if (data.success) {
         setEmailSubject(data.subject || '');
         setEmailBody(data.emailBody);
+        console.log('Email content updated:', data.subject);
       } else {
         console.error('Failed to generate email:', data.error);
       }
+
+      // Now wait for the remaining time on the timer
+      await timerPromise;
+
     } catch (error) {
       console.error('Error generating outreach email:', error);
+      // Still wait for minimum time even on error
+      await new Promise(resolve => setTimeout(resolve, 10000));
     } finally {
       setIsLoadingEmail(false);
     }
@@ -93,8 +115,8 @@ const OutreachContract: React.FC = () => {
   }, []);
 
   return (
-    <div className="outreach-contract">
-      <div className="content-wrapper">
+    <div className={`outreach-contract ${isChatOpen ? 'chat-open' : ''}`}>
+      <div className={`content-wrapper ${isChatOpen ? 'chat-open' : ''}`}>
         {/* Sticky Header Container */}
         <div className={`sticky-header ${isScrolled ? 'scrolled' : ''}`}>
           {/* Header */}
@@ -110,7 +132,7 @@ const OutreachContract: React.FC = () => {
               </h1>
             </div>
             <div className="header-buttons">
-              <button className="header-btn-secondary">
+              <button className="header-btn-secondary" onClick={handleRequestChanges}>
                 Request Changes
               </button>
               <button className="header-btn-primary" onClick={handleActivateSourcing}>
@@ -153,19 +175,6 @@ const OutreachContract: React.FC = () => {
 
           {/* Right Column - Contract Cards */}
           <div className="right-column">
-            {/* Delivery */}
-            <div className="contract-card">
-              <div className="contract-icon-wrapper">
-                <span className="material-icons-round">schedule</span>
-              </div>
-              <div className="contract-content">
-                <p className="contract-title">Delivery</p>
-                <p className="contract-description">
-                  Receive <strong>3 interview-ready candidates</strong> within 2 weeks.
-                </p>
-              </div>
-            </div>
-
             {/* Precision */}
             <div className="contract-card">
               <div className="contract-icon-wrapper">
@@ -174,20 +183,7 @@ const OutreachContract: React.FC = () => {
               <div className="contract-content">
                 <p className="contract-title">Precision</p>
                 <p className="contract-description">
-                  I'll only reach out to candidates who meet your <strong>exact requirements</strong>.
-                </p>
-              </div>
-            </div>
-
-            {/* Continuous */}
-            <div className="contract-card">
-              <div className="contract-icon-wrapper">
-                <span className="material-icons-round">refresh</span>
-              </div>
-              <div className="contract-content">
-                <p className="contract-title">Continuous</p>
-                <p className="contract-description">
-                  Automatically discover and contact new talent as they <strong>enter the market</strong>.
+                  I only reach out to candidates who match your <strong>exact requirements</strong>.
                 </p>
               </div>
             </div>
@@ -201,6 +197,32 @@ const OutreachContract: React.FC = () => {
                 <p className="contract-title">Automated Outreach</p>
                 <p className="contract-description">
                   All candidate communication and screening are <strong>handled autonomously</strong>.
+                </p>
+              </div>
+            </div>
+
+            {/* Continuous */}
+            <div className="contract-card">
+              <div className="contract-icon-wrapper">
+                <span className="material-icons-round">refresh</span>
+              </div>
+              <div className="contract-content">
+                <p className="contract-title">Continuous</p>
+                <p className="contract-description">
+                  Automatically find and contact new talent as they <strong>enter the market</strong>.
+                </p>
+              </div>
+            </div>
+
+            {/* Delivery */}
+            <div className="contract-card">
+              <div className="contract-icon-wrapper">
+                <span className="material-icons-round">check_circle</span>
+              </div>
+              <div className="contract-content">
+                <p className="contract-title">Delivery</p>
+                <p className="contract-description">
+                  Receive <strong>3 interview-ready candidates</strong> within 2 weeks.
                 </p>
               </div>
             </div>
@@ -220,6 +242,16 @@ const OutreachContract: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Chat Pane for Request Changes */}
+      <ChatPane
+        isOpen={isChatOpen}
+        onClose={() => setIsChatOpen(false)}
+        title="Chat with Sia"
+        mode="outreach"
+        emailSubject={emailSubject}
+        emailBody={emailBody}
+      />
     </div>
   );
 };

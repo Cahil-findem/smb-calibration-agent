@@ -19,7 +19,7 @@
 .email-header-row {
   display: flex;
   gap: 8px;
-  align-items: center;
+  align-items: flex-start;
   width: 100%;
 }
 
@@ -134,5 +134,6 @@
   font-weight: 400;
   line-height: 24px;
   margin: 0;
-  white-space: nowrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }

@@ -43,6 +43,10 @@
   transition: width 0.3s ease;
 }
 
+.progress-fill.success-progress {
+  background: #4CAF50;
+}
+
 /* Main Content */
 .success-content {
   width: 100%;

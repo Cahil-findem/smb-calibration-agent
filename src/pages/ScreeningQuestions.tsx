@@ -67,6 +67,42 @@ const ScreeningQuestions: React.FC = () => {
     }
   };
 
+  const handleAddQuestion = () => {
+    const updatedQuestions = [...questions, ''];
+    setQuestions(updatedQuestions);
+
+    // Store questions in localStorage
+    const storedData = localStorage.getItem('demoSetupData');
+    if (storedData) {
+      try {
+        const demoData = JSON.parse(storedData);
+        demoData.screeningQuestions = updatedQuestions;
+        localStorage.setItem('demoSetupData', JSON.stringify(demoData));
+      } catch (error) {
+        console.error('Error updating demo setup data:', error);
+      }
+    }
+  };
+
+  const handleDeleteQuestion = (index: number) => {
+    if (index < 3) return; // Don't allow deleting first 3 questions
+
+    const updatedQuestions = questions.filter((_, i) => i !== index);
+    setQuestions(updatedQuestions);
+
+    // Store questions in localStorage
+    const storedData = localStorage.getItem('demoSetupData');
+    if (storedData) {
+      try {
+        const demoData = JSON.parse(storedData);
+        demoData.screeningQuestions = updatedQuestions;
+        localStorage.setItem('demoSetupData', JSON.stringify(demoData));
+      } catch (error) {
+        console.error('Error updating demo setup data:', error);
+      }
+    }
+  };
+
   const handleContinue = () => {
     // Check if all questions are filled
     const allFilled = questions.every(q => q.trim() !== '');
@@ -119,7 +155,7 @@ const ScreeningQuestions: React.FC = () => {
                 alt="Logo"
               />
               <h1 className="page-title">
-                Great! Could you share three screening questions you'd like me to ask candidates before sending them your way?
+                I've drafted three screening questions based on your role. Feel free to edit or add more if you'd like.
               </h1>
             </div>
           </div>
@@ -127,7 +163,15 @@ const ScreeningQuestions: React.FC = () => {
           <div className={`questions-list ${isTransitioning ? (transitionDirection === 'forward' ? 'animate-fade-out-up' : 'animate-fade-out-down') : 'animate-fade-up animate-delay-1'}`}>
             {questions.map((question, index) => (
               <div key={index} className="question-item">
-                <div className="question-number">{index + 1}</div>
+                <div
+                  className={`question-number ${index >= 3 ? 'deletable' : ''}`}
+                  onClick={() => index >= 3 && handleDeleteQuestion(index)}
+                >
+                  <span className="number-text">{index + 1}</span>
+                  {index >= 3 && (
+                    <span className="material-icons-round delete-icon">delete</span>
+                  )}
+                </div>
                 <textarea
                   className="question-input"
                   value={question}
@@ -137,6 +181,13 @@ const ScreeningQuestions: React.FC = () => {
                 />
               </div>
             ))}
+
+            <div className="question-item add-question-item" onClick={handleAddQuestion}>
+              <div className="question-number add-question-number">
+                <span className="material-icons-round">add</span>
+              </div>
+              <div className="add-question-text">Add another question</div>
+            </div>
           </div>
 
           <div className={`buttons-container ${isTransitioning ? (transitionDirection === 'forward' ? 'animate-fade-out-up' : 'animate-fade-out-down') : 'animate-fade-up animate-delay-2'}`}>

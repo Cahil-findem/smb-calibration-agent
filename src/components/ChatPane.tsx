@@ -11,9 +11,22 @@ interface ChatPaneProps {
   onClose: () => void;
   candidates?: any[];
   onCandidatesUpdate?: (newCandidates: any[], appended_feedback: string, isLoading?: boolean) => void;
+  title?: string;
+  mode?: 'candidate' | 'outreach';
+  emailSubject?: string;
+  emailBody?: string;
 }
 
-const ChatPane: React.FC<ChatPaneProps> = ({ isOpen, onClose, candidates = [], onCandidatesUpdate }) => {
+const ChatPane: React.FC<ChatPaneProps> = ({
+  isOpen,
+  onClose,
+  candidates = [],
+  onCandidatesUpdate,
+  title = 'Candidate Calibration',
+  mode = 'candidate',
+  emailSubject = '',
+  emailBody = ''
+}) => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -25,11 +38,19 @@ const ChatPane: React.FC<ChatPaneProps> = ({ isOpen, onClose, candidates = [], o
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const suggestions = [
+  const candidateSuggestions = [
     { icon: 'trending_up', text: 'They\'re too senior for what I need' },
     { icon: 'apartment', text: 'I want candidates from specific companies' },
     { icon: 'rocket_launch', text: 'These candidates don\'t have enough startup experience' }
   ];
+
+  const outreachSuggestions = [
+    { icon: 'email', text: 'Make the email more casual and friendly' },
+    { icon: 'schedule', text: 'Adjust the outreach cadence timing' },
+    { icon: 'edit', text: 'Change the subject line to be more engaging' }
+  ];
+
+  const suggestions = mode === 'outreach' ? outreachSuggestions : candidateSuggestions;
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -211,7 +232,7 @@ const ChatPane: React.FC<ChatPaneProps> = ({ isOpen, onClose, candidates = [], o
           {messages.length > 0 && (
             <span className="material-icons-round">auto_awesome</span>
           )}
-          <h2>Candidate Calibration</h2>
+          <h2>{title}</h2>
         </div>
         <div className="chat-pane-actions">
           <button className="icon-btn" onClick={handleReset} aria-label="Reset conversation">
