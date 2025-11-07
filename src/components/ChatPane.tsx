@@ -24,8 +24,8 @@ const ChatPane: React.FC<ChatPaneProps> = ({
   onCandidatesUpdate,
   title = 'Candidate Calibration',
   mode = 'candidate',
-  emailSubject = '',
-  emailBody = ''
+  emailSubject: _emailSubject = '',
+  emailBody: _emailBody = ''
 }) => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);

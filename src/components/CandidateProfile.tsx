@@ -155,7 +155,6 @@ const CandidateProfile: React.FC<CandidateProfileProps> = ({
   const displayName = profileData.name || candidate.name;
   const displayTitle = profileData.title || candidate.title;
   const displayCompany = profileData.company || candidate.company;
-  const displayCompanyLogo = profileData.companyLogo || candidate.companyLogo;
   const displayTenure = profileData.tenure || candidate.tenure;
   const displayAvatar = profileData.avatar || candidate.avatar;
   const displayLocation = profileData.location || 'San Francisco, CA';
